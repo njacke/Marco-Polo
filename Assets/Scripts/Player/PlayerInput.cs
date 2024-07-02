@@ -5,7 +5,7 @@ public class PlayerInput : MonoBehaviour
 {
     public FrameInput FrameInput { get; private set; }
     private PlayerInputActions _playerInputAcitons;
-    private InputAction _move, _scan, _cheat;
+    private InputAction _move, _scan, _cheat, _catch;
 
     private void Awake() {
         _playerInputAcitons = new PlayerInputActions();
@@ -13,6 +13,7 @@ public class PlayerInput : MonoBehaviour
         _move = _playerInputAcitons.Player.Move;
         _scan = _playerInputAcitons.Player.Scan;
         _cheat = _playerInputAcitons.Player.Cheat;
+        _catch = _playerInputAcitons.Player.Catch;
     }
 
     private void OnEnable() {
@@ -32,6 +33,7 @@ public class PlayerInput : MonoBehaviour
             Move = _move.ReadValue<Vector2>(),
             Scan = _scan.WasPressedThisFrame(),
             Cheat = _cheat.WasPressedThisFrame(),
+            Catch = _catch.WasPressedThisFrame()
         };
     }
 }
@@ -40,4 +42,5 @@ public struct FrameInput {
     public Vector2 Move;
     public bool Scan;
     public bool Cheat;
+    public bool Catch;
 }
