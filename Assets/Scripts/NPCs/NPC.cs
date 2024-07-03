@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour
 {    
-    public static Action<NPCType> OnCaughtNPC;
+    public static Action<NPC> OnCaughtNPC;
     public static Action OnCheatDetected;
+
+    public NPCType GetNPCType { get => _npcType; }
 
     [SerializeField] private Animator _waveAnimator;
     [SerializeField] private SpriteRenderer _caughtVisual;
@@ -36,10 +38,10 @@ public class NPC : MonoBehaviour
 
     public enum NPCType {
         None,
-        Boy1,
-        Boy2,
-        Girl1,
-        Girl2
+        Italian,
+        German,
+        Spaniard,
+        American
     }
 
     private void Awake() {
@@ -84,7 +86,7 @@ public class NPC : MonoBehaviour
         _isCaught = true;
         _caughtVisual.enabled = true;
         _currentState = CurrentState.None;
-        OnCaughtNPC?.Invoke(_npcType);
+        OnCaughtNPC?.Invoke(this);
 
         //_spriteRenderer.enabled = true;
         //Destroy(this.gameObject);
