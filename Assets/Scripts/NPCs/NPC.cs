@@ -5,14 +5,14 @@ using UnityEngine;
 public class NPC : MonoBehaviour
 {    
     public static Action<NPC> OnCaughtNPC;
-    public static Action OnCheatDetected;
+    public static Action<NPC> OnCheatDetected;
 
     public NPCType GetNPCType { get => _npcType; }
 
-    [SerializeField] private Animator _waveAnimator;
     [SerializeField] private SpriteRenderer _caughtVisual;
     [SerializeField] private LayerMask _rcLayerMask;
     [SerializeField] private NPCType _npcType = NPCType.None;
+    [SerializeField] private bool _isContestant = true;
     [SerializeField] private float _moveStateDuration = 2f;
     [SerializeField] private float _idleStateDuration = 1f;
     [SerializeField] private float _idleStateChance = .2f;
@@ -22,13 +22,12 @@ public class NPC : MonoBehaviour
     
     private Rigidbody2D _rb;
     private SpriteRenderer _spriteRenderer;
+    private SoundWave _soundWave;
 
     private CurrentState _currentState = CurrentState.None;
     private float _currentStateTime = 0f;
     private Vector2 _currentMoveDir = Vector2.zero;
     private bool _isCaught = false;
-
-    private readonly int SOUND_WAVE_HASH = Animator.StringToHash("SoundWave");
 
     private enum CurrentState {
         None,
@@ -41,24 +40,27 @@ public class NPC : MonoBehaviour
         Italian,
         German,
         Spaniard,
-        American
+        American,
+        Dog
     }
 
     private void Awake() {
         _rb = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();        
+        _soundWave = GetComponentInChildren<SoundWave>();
+
         _currentMoveDir = GetRandomMoveDir();
         _currentState = CurrentState.Move;
     }
 
     private void OnEnable() {
-        PlayerController.OnScan += ScanResponse;
-        Blindfold.OnBlindfoldOpened += DetectCheat;
+        PlayerController.OnScan += PlayerController_OnScan;
+        Blindfold.OnBlindfoldOpened += Blindfold_OnBlinfoldOpened;
     }
 
     private void OnDisable() {
-        PlayerController.OnScan -= ScanResponse;
-        Blindfold.OnBlindfoldOpened -= DetectCheat;
+        PlayerController.OnScan -= PlayerController_OnScan;
+        Blindfold.OnBlindfoldOpened -= Blindfold_OnBlinfoldOpened;
     }
 
     private void Update() {
@@ -76,21 +78,23 @@ public class NPC : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.GetComponentInParent<PlayerController>()) {
+        if (_npcType != NPCType.None && other.gameObject.GetComponentInParent<PlayerController>()) {
             HandleCaught();
         }
     }
 
     private void HandleCaught() {
-        Debug.Log("I have been caught.");
-        _isCaught = true;
-        _caughtVisual.enabled = true;
-        _currentState = CurrentState.None;
-        OnCaughtNPC?.Invoke(this);
-
-        //_spriteRenderer.enabled = true;
-        //Destroy(this.gameObject);
-        //Time.timeScale = 0f;
+        if (_isContestant) {
+            Debug.Log("I have been caught.");
+            _isCaught = true;
+            _caughtVisual.enabled = true;
+            _currentState = CurrentState.None;
+            OnCaughtNPC?.Invoke(this);
+        }
+        else if (_npcType == NPCType.Dog) {
+            // TODO: add dog logic
+            return;
+        }
     }
 
     private void StateUpdate() {
@@ -124,7 +128,7 @@ public class NPC : MonoBehaviour
     }
 
     private bool FleeCheck() {
-        Vector3 dir = PlayerController.Instance.transform.position - transform.position;
+        Vector3 dir = GameManager.Instance.GetCurrentPlayer.transform.position - transform.position;
         bool isInFleeRange = dir.magnitude <= _minFleeDist;
 
         if (isInFleeRange) {
@@ -135,9 +139,11 @@ public class NPC : MonoBehaviour
         return isInFleeRange;
     }
 
-    private void ScanResponse() {
+    private void PlayerController_OnScan() {
+        if (!_isContestant) return; // non-contestants don't respond
+
         Debug.Log("Scan response triggered!");
-        _waveAnimator.SetTrigger(SOUND_WAVE_HASH);
+        _soundWave.TriggerSoundWave();
         //StartCoroutine(ScanResponseRoutine());
     }
 
@@ -149,14 +155,15 @@ public class NPC : MonoBehaviour
         _spriteRenderer.enabled = false;
     }
 
-    private void DetectCheat() {
-        Vector2 rcDir = PlayerController.Instance.transform.position - transform.position;
+    private void Blindfold_OnBlinfoldOpened() {
+        if(!_isContestant) return; // non-contestants don't detect cheating
+
+        Vector2 rcDir = GameManager.Instance.GetCurrentPlayer.transform.position - transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, rcDir, _detectCheatDist, _rcLayerMask);
 
         if (hit.collider != null && hit.collider.gameObject.GetComponent<PlayerController>()) {
             Debug.Log("Cheating detected.");
-            OnCheatDetected?.Invoke();
-            Time.timeScale = 0f;
+            OnCheatDetected?.Invoke(this);
         }
     }
 }

@@ -14,26 +14,28 @@ public class SkillsUI : MonoBehaviour
     [SerializeField] private Sprite[] _cheatImages;
 
     private void Start() {
-        ResetCDSprites();        
+        SetOnCDSprites();      
     }
 
     private void OnEnable() {
-        GlobalCooldown.OnCooldownStart += UpdateCDStartSprites;
-        GlobalCooldown.OnCooldownEnd += ResetCDSprites;
+        GameManager.OnGamePaused += SetOnCDSprites;
+        GlobalCooldown.OnCooldownStart += GlobalCooldown_OnCooldownStart;
+        GlobalCooldown.OnCooldownEnd += GlobalCooldown_OnCooldownEnd;
     }
 
     private void OnDisable() {
-        GlobalCooldown.OnCooldownStart -= UpdateCDStartSprites;        
-        GlobalCooldown.OnCooldownEnd -= ResetCDSprites;
+        GameManager.OnGamePaused -= SetOnCDSprites;
+        GlobalCooldown.OnCooldownStart -= GlobalCooldown_OnCooldownStart;        
+        GlobalCooldown.OnCooldownEnd -= GlobalCooldown_OnCooldownEnd;
     }
 
 
-    private void UpdateCDStartSprites(PlayerController.SkillType skillType, float cdDuration) {
+    private void GlobalCooldown_OnCooldownStart(PlayerController.SkillType skillType, float cdDuration) {
         SetOnCDSprites();
         SetActiveSkillSprite(skillType);
     }
 
-    private void ResetCDSprites() {
+    private void GlobalCooldown_OnCooldownEnd() {
         _catchImage.sprite = _catchImages[0];
         _scanImage.sprite = _scanImages[0];
         _cheatImage.sprite = _cheatImages[0];

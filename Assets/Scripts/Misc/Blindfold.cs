@@ -15,22 +15,22 @@ public class Blindfold : MonoBehaviour
     private Coroutine _blindfoldRoutine;
 
     private void Start() {
-        CloseBlindfold(2f);
+        //CloseBlindfold(2f);
     }
 
     private void OnEnable() {
-        PlayerController.OnCheat += OpenAndCloseBlindfold;
+        PlayerController.OnCheat += PlayerController_OnCheat;
     }
 
     private void OnDisable() {
-        PlayerController.OnCheat -= OpenAndCloseBlindfold;        
+        PlayerController.OnCheat -= PlayerController_OnCheat;        
     }
 
     private void CloseBlindfold(float duration) {
         StartCoroutine(CloseBlindfoldRoutine(duration));
     }
 
-    private void OpenAndCloseBlindfold(float duration) {
+    private void PlayerController_OnCheat(float duration) {
         _blindfoldRoutine ??= StartCoroutine(OpenAndCloseBlindfoldRoutine(duration));
     }
 

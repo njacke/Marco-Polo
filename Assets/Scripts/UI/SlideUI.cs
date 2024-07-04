@@ -22,11 +22,11 @@ public class SlideUI : MonoBehaviour
     }
 
     public IEnumerator SlideInRoutine() {
-        yield return StartCoroutine(SlideToTargetRoutine(_targetPos));
+        yield return SlideToTargetRoutine(_targetPos);
     }
 
     public IEnumerator SlideOutRoutine() {
-        yield return StartCoroutine(SlideToTargetRoutine(_awakePos));
+        yield return SlideToTargetRoutine(_awakePos);
     }
 
     private IEnumerator SlideToTargetRoutine(Vector3 targetPos) {

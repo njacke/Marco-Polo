@@ -1,30 +1,27 @@
 using System;
 using System.Collections;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public static Action OnScan;
     public static Action<float> OnCheat;
-    public static PlayerController Instance;
     
     [SerializeField] private CircleCollider2D _catchDetector;
     [SerializeField] private SpriteRenderer _catchVisual;
-    [SerializeField] private Animator _waveAnimator;
     [SerializeField] private float _globalCooldownDuration = 2f;
     [SerializeField] private float _catchSkillDuration = 1f;
     [SerializeField] private float _cheatSkillDuration = 1f;
     [SerializeField] private float _baseMoveSpeed = 100f;
     
     private Rigidbody2D _rb;
-    private SpriteRenderer _spriteRenderer;
-    private PlayerInput  _playerInput;
-    private FrameInput _frameInput;
+    private PlayerInput _playerInput;
+    private SoundWave _soundWave; 
     private GlobalCooldown _globalCooldown;
+    private FrameInput _frameInput;
 
     private bool _controlsLocked = false;
-
-    private readonly int SOUND_WAVE_HASH = Animator.StringToHash("SoundWave");
 
     public enum SkillType {
         None,
@@ -34,41 +31,44 @@ public class PlayerController : MonoBehaviour
     }
     
     private void Awake() {
-        if (Instance == null) { Instance = this; }
-
         _rb = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
         _playerInput = GetComponent<PlayerInput>();
+        _soundWave = GetComponentInChildren<SoundWave>();
         _globalCooldown = new GlobalCooldown(_globalCooldownDuration);
     }
 
     private void Start() {
-        //_spriteRenderer.enabled = false;
         _catchDetector.enabled = false;
-        _catchVisual.enabled = false;        
+        _catchVisual.enabled = false;     
     }
 
     private void Update() {
         _globalCooldown.TrackCooldown();
 
-        GatherInput();
-        Move();
-        
-        HandleCatch();
-        HandleScan();
-        HandleCheat();
+        if (!_controlsLocked) {
+            GatherInput();
+            HandleCatch();
+            HandleScan();
+            HandleCheat();
+        }
     }
 
     private void FixedUpdate() {
-        Move();
+        if (!_controlsLocked) {
+            Move();
+        }
     }
 
     private void OnEnable() {
-        GameManager.OnGamePaused += HandleGamePaused;
+        GameManager.OnGameStarted += GameManager_OnGameStarted;
+        GameManager.OnGamePaused += GameManager_OnGamePaused;
+        CountdownUI.OnCountdownStep += CountdownUI_OnCountdownStep;
     }
 
     private void OnDisable() {
-        GameManager.OnGamePaused -= HandleGamePaused;
+        GameManager.OnGameStarted -= GameManager_OnGameStarted;
+        GameManager.OnGamePaused -= GameManager_OnGamePaused;
+        CountdownUI.OnCountdownStep -= CountdownUI_OnCountdownStep;
     }
 
     private void GatherInput() {
@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
     private void HandleScan() {
         if (_frameInput.Scan && !_globalCooldown.IsOnCooldown) {
             Debug.Log("Scan skill has been used.");
-            _waveAnimator.SetTrigger(SOUND_WAVE_HASH);
+            _soundWave.TriggerSoundWave();
             _globalCooldown.StartCooldown(SkillType.Scan);
 
             OnScan?.Invoke();
@@ -117,8 +117,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleGamePaused() {
+    private void LockControls() {
         _controlsLocked = true;
-        _globalCooldown.ResetCooldown();
+        _frameInput = new FrameInput();
+        _rb.velocity = Vector2.zero;
+    }
+
+    private void GameManager_OnGameStarted() {
+        LockControls();
+    }
+
+    private void GameManager_OnGamePaused() {
+        LockControls();
+    }
+
+    private void CountdownUI_OnCountdownStep(bool isFinalStep, int stepIndex) {
+        if (isFinalStep) {
+            _controlsLocked = false;
+            Debug.Log("Unlocking Controls.");
+            _globalCooldown.ResetCooldown();
+        } else {
+            _soundWave.TriggerSoundWave();
+        }
     }
 }

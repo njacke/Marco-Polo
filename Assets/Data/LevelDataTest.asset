@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04968199b451cc942976b230b758f558, type: 3}
+  m_Name: LevelDataTest
+  m_EditorClassIdentifier: 
+  LevelID: 1
+  BackgroundSprite: {fileID: 0}
+  PlayerPrefab: {fileID: 7381563924982986053, guid: c3af7d354090c83488a016479f953703, type: 3}
+  PlayerStartPos: {x: 0, y: -2.5, z: 0}
+  NpcsPrefabs:
+  - {fileID: 962139295188958027, guid: e674bc81882ab7f4b94df3c744e9afd6, type: 3}
+  - {fileID: 962139295188958027, guid: 6ab6702e9bf4c6548a33cc58bf338c6d, type: 3}
+  - {fileID: 962139295188958027, guid: c14975862bc8bb843ad7a3c4b355f7f5, type: 3}
+  - {fileID: 962139295188958027, guid: ef813d10c14aaa946994fd52ef364efa, type: 3}
+  - {fileID: 962139295188958027, guid: 2dea5f60fae499d478da66753112cf40, type: 3}
+  NpcsStarPos:
+  - {x: -5, y: 0, z: 0}
+  - {x: 5, y: 0, z: 0}
+  - {x: -3, y: 2, z: 0}
+  - {x: 3, y: 2, z: 0}
+  - {x: 1.5, y: 1, z: 0}
