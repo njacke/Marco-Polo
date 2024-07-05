@@ -2,26 +2,37 @@ using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
     public static Action OnGameStarted;
     public static Action OnGamePaused;
     public static Action<GameOverType> OnGameOver;
+    public static Action OnLevelCompleted;
     public static Action<NPC.NPCType> OnGuess;
+    public static Action OnGameObjectsInstantiated;
 
     [SerializeField] private float _guessUIDisplayDelay = 2f;
+    [SerializeField] private float _cheatGameOverDelay = 1f;
+    [SerializeField] private float _gameOverUIDisplayDelay = 2f;
     [SerializeField] private float _backgroundImage;
     [SerializeField] private LevelDataSO[] _levelsData;
 
     private Level _currentLevel;
     private GameObject _currentPlayer;
+    private NPC[] _currentNPCs;
+    private int _contestantsCount = 0;
+    private int _contestantsEliminated = 0;
+
+    private Coroutine _npcCaughtRoutine;
     private bool _firstLevelLoaded = false; // TODO: remove when done testing
 
     private readonly string SCENE_GAME_STRING = "Game";
 
+    public NPC CurrentCaughtNPC { get; private set; } = null;
     public GameObject GetCurrentPlayer { get => _currentPlayer; }
+    public NPC[] GetCurrentNPCs { get => _currentNPCs; }
+    public float GetCheatGameOverDelay { get => _cheatGameOverDelay; }
 
     public enum Level {
         None,
@@ -38,7 +49,6 @@ public class GameManager : Singleton<GameManager>
         Bite
     }
 
-    public NPC CurrentCaughtNPC { get; private set; } = null;
 
     private void Start() {
         if (!_firstLevelLoaded) {
@@ -48,20 +58,29 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void OnEnable() {
+        OnGameStarted += GameManager_OnGameStarted;
         NPC.OnCaughtNPC += NPC_OnNPCCaught;
         NPC.OnCheatDetected += NPC_OnCheatDetected;
-        GuessUI.OnGuessAnswer += GuessUI_OnGuessAnswer;
+        TimerUI.OnTimerStep += TimerUI_OnTimerStep;
+        GuessUI.OnGuessEnd += GuessUI_OnGuessEnd;
         GameOverUI.OnRetry += GameOverUI_OnRetry;
+        WinScreenUI.OnContinue += WinScreenUI_OnContinue;
     }
+
 
     private void OnDisable() {
+        OnGameStarted -= GameManager_OnGameStarted;
         NPC.OnCaughtNPC -= NPC_OnNPCCaught;        
         NPC.OnCheatDetected -= NPC_OnCheatDetected;
-        GuessUI.OnGuessAnswer -= GuessUI_OnGuessAnswer;
+        TimerUI.OnTimerStep -= TimerUI_OnTimerStep;
+        GuessUI.OnGuessEnd -= GuessUI_OnGuessEnd;
         GameOverUI.OnRetry -= GameOverUI_OnRetry;
+        WinScreenUI.OnContinue -= WinScreenUI_OnContinue;
     }
 
-    private void LoadLevel(Level level) {
+    private async void LoadLevel(Level level) {
+        _contestantsCount = 0;
+        _contestantsEliminated = 0;
         var levelData = _levelsData.FirstOrDefault(data => data.LevelID == level);
         if (levelData == null) {
             Debug.Log("No LevelDataSO found for level: " + level.ToString());
@@ -72,41 +91,65 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        // load scene
-        //SceneManager.LoadScene(SCENE_GAME_STRING);
+        // load scene async before instantiating objects
+        await SceneLoader.LoadSceneAsync(SCENE_GAME_STRING);
+        _currentLevel = level;
 
         // spawn player
         _currentPlayer = Instantiate(levelData.PlayerPrefab, levelData.PlayerStartPos, Quaternion.identity);
 
         // spawn NPCs
+        _currentNPCs = new NPC[levelData.NpcsPrefabs.Length];
+
         for (int i = 0; i < levelData.NpcsPrefabs.Length; i++) {
-            Instantiate(levelData.NpcsPrefabs[i], levelData.NpcsStarPos[i], Quaternion.identity);
+            var newNPC = Instantiate(levelData.NpcsPrefabs[i], levelData.NpcsStarPos[i], Quaternion.identity).GetComponent<NPC>();
+            _currentNPCs[i] = newNPC;
+            if (newNPC.IsContestant) _contestantsCount++;
         }
 
-        _currentLevel = level;
+        OnGameObjectsInstantiated?.Invoke();
         Time.timeScale = 1f;
         OnGameStarted?.Invoke();
+
         Debug.Log("Level: " + level.ToString() + " loaded successfully.");
     }
 
-    private void LoadGameOver(GameOverType gameOverType) {
+    private IEnumerator LoadGameOver(GameOverType gameOverType) {
         Time.timeScale = 0f;
-        switch (gameOverType) {
-            case GameOverType.Cheat:
-                break;
-            default:
-                break;
-        }
-
+        OnGamePaused?.Invoke();
+        yield return new WaitForSecondsRealtime(_gameOverUIDisplayDelay);
         OnGameOver?.Invoke(gameOverType);
     }
 
+    private void GameManager_OnGameStarted() {
+        // set to defualt positions to avoid trapping NPCs after wrong guess
+        var levelData = _levelsData.FirstOrDefault(data => data.LevelID == _currentLevel);
+        for (int i = 0; i < _currentNPCs.Length; i++) {
+            if (_currentNPCs[i] != null) {
+                NPC npc = _currentNPCs[i].GetComponent<NPC>();
+                npc.transform.position = levelData.NpcsStarPos[i];
+            }
+        }
+    }
+
     private void NPC_OnCheatDetected(NPC sender) {
-        LoadGameOver(GameOverType.Cheat);
+        StartCoroutine(OnCheatDetectedRoutine(sender));
+    }
+
+    private IEnumerator OnCheatDetectedRoutine(NPC sender) {
+        OnGamePaused?.Invoke();
+        yield return sender.DisplayCheatVisual();
+        StartCoroutine(LoadGameOver(GameOverType.Cheat));
     }
 
     private void NPC_OnNPCCaught(NPC sender) {
-        StartCoroutine(HandleNPCCaughtRoutine(sender));
+        // game over > guess priority + only one routine at a time
+        if (_npcCaughtRoutine == null) {
+            _npcCaughtRoutine = StartCoroutine(HandleNPCCaughtRoutine(sender));
+        } else if (sender.GetNPCType == NPC.NPCType.Dog) {
+            StopCoroutine(_npcCaughtRoutine);
+            _npcCaughtRoutine = StartCoroutine(HandleNPCCaughtRoutine(sender));
+        }
     }
 
     private IEnumerator HandleNPCCaughtRoutine(NPC npc) {
@@ -115,20 +158,44 @@ public class GameManager : Singleton<GameManager>
 
         CurrentCaughtNPC = npc;
         
-        yield return new WaitForSecondsRealtime(_guessUIDisplayDelay);
-        OnGuess?.Invoke(npc.GetNPCType);        
+        if (npc.GetNPCType == NPC.NPCType.Dog) {
+            StartCoroutine(LoadGameOver(GameOverType.Bite));
+        } else {
+            yield return new WaitForSecondsRealtime(_guessUIDisplayDelay);
+            OnGuess?.Invoke(npc.GetNPCType);
+        }
+
+        _npcCaughtRoutine = null;
     }
 
-    private void GuessUI_OnGuessAnswer(bool isCorrectAnswer) {
+    private void TimerUI_OnTimerStep(bool isFinalStep, int stepIndex) {
+        if (isFinalStep) {
+            Time.timeScale = 0;
+            OnGamePaused?.Invoke();
+            OnGameOver?.Invoke(GameOverType.Timer);
+        }
+    }
+
+    private void GuessUI_OnGuessEnd(bool isCorrectAnswer) {
         if (isCorrectAnswer) {
             CurrentCaughtNPC.gameObject.SetActive(false);
+            _contestantsEliminated++;
         }
 
         Time.timeScale = 1f;
-        OnGameStarted?.Invoke();
+
+        if (_contestantsEliminated >= _contestantsCount) {
+            OnLevelCompleted?.Invoke();
+        } else {
+            OnGameStarted?.Invoke();
+        }
     }
 
     private void GameOverUI_OnRetry() {
         LoadLevel(_currentLevel);      
+    }
+
+    private void WinScreenUI_OnContinue() {
+        // TODO: load next level/cinematic/whatever
     }
 }

@@ -52,6 +52,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Size.x
+      value: 1.0272703
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Size.y
+      value: 2.091488
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.040391788
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.0049927235
+      objectReference: {fileID: 0}
     - target: {fileID: 9192276875834122504, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Name
       value: Italian

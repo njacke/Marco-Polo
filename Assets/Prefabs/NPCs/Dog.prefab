@@ -36,6 +36,10 @@ PrefabInstance:
       propertyPath: _moveStateDuration
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4587854152546696166, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 916cc1f42bab3774f96ee19c1c375b3e, type: 3}
     - target: {fileID: 7219228148660506200, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.53
@@ -78,24 +82,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Size.x
-      value: 2.4710755
+      value: 2.0404828
       objectReference: {fileID: 0}
     - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Size.y
-      value: 1.5206354
+      value: 1.3053484
       objectReference: {fileID: 0}
     - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Offset.x
-      value: -0.030306336
+      value: 0.005576135
       objectReference: {fileID: 0}
     - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Offset.y
-      value: 0.06857313
+      value: 0.0057763457
       objectReference: {fileID: 0}
     - target: {fileID: 7713166067480133563, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Direction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9068052370545437792, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 80408a086e41c5548852872cb760f8f9, type: 2}
     - target: {fileID: 9192276875834122504, guid: 616ab8cab5ab1064d91bbfc8f20a2a44, type: 3}
       propertyPath: m_Name
       value: Dog

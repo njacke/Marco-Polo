@@ -7,16 +7,14 @@ public class PlayerController : MonoBehaviour
 {
     public static Action OnScan;
     public static Action<float> OnCheat;
-    
-    [SerializeField] private CircleCollider2D _catchDetector;
-    [SerializeField] private SpriteRenderer _catchVisual;
+
     [SerializeField] private float _globalCooldownDuration = 2f;
-    [SerializeField] private float _catchSkillDuration = 1f;
     [SerializeField] private float _cheatSkillDuration = 1f;
     [SerializeField] private float _baseMoveSpeed = 100f;
     
     private Rigidbody2D _rb;
     private PlayerInput _playerInput;
+    private Catch _catch; 
     private SoundWave _soundWave; 
     private GlobalCooldown _globalCooldown;
     private FrameInput _frameInput;
@@ -33,13 +31,9 @@ public class PlayerController : MonoBehaviour
     private void Awake() {
         _rb = GetComponent<Rigidbody2D>();
         _playerInput = GetComponent<PlayerInput>();
+        _catch = GetComponentInChildren<Catch>();
         _soundWave = GetComponentInChildren<SoundWave>();
         _globalCooldown = new GlobalCooldown(_globalCooldownDuration);
-    }
-
-    private void Start() {
-        _catchDetector.enabled = false;
-        _catchVisual.enabled = false;     
     }
 
     private void Update() {
@@ -84,18 +78,9 @@ public class PlayerController : MonoBehaviour
     private void HandleCatch() {
         if (_frameInput.Catch && !_globalCooldown.IsOnCooldown) {
             Debug.Log("Catch skill has been used.");
-            StartCoroutine(CatchRoutine());
+            _catch.TriggerCatch();
             _globalCooldown.StartCooldown(SkillType.Catch);
         }
-    }
-
-    private IEnumerator CatchRoutine() {
-        _catchDetector.enabled = true;
-        _catchVisual.enabled = true;
-        yield return new WaitForSeconds(_catchSkillDuration);
-
-        _catchDetector.enabled = false;
-        _catchVisual.enabled = false;        
     }
 
     private void HandleScan() {
@@ -125,6 +110,8 @@ public class PlayerController : MonoBehaviour
 
     private void GameManager_OnGameStarted() {
         LockControls();
+        _catch.ResetCatch();
+        _soundWave.ResetSoundWave();
     }
 
     private void GameManager_OnGamePaused() {

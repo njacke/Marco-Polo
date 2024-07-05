@@ -4,18 +4,20 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 using Unity.VisualScripting;
 
 public class GuessUI : MonoBehaviour
 {
-    public static Action<bool> OnGuessAnswer;
+    public static Action<bool> OnGuessResult;
+    public static Action<bool> OnGuessEnd;
 
     [SerializeField] private float _resetDelay = 1f;
-    [SerializeField] private Button[] _answersButtons;
+    [SerializeField] private GameObject _answersButtons;
+    [SerializeField] private Button[] _answersButtonsArray;
     [SerializeField] private Image _titleImage;
     [SerializeField] private Image _npcImage;
     [SerializeField] private Image _resultImage;
+    [SerializeField] private GameObject _answerButtons;
     [SerializeField] private Sprite[] _resultSprites;
     [SerializeField] private Sprite[] _italianSprites;
     [SerializeField] private Sprite[] _germanSprites;
@@ -54,7 +56,6 @@ public class GuessUI : MonoBehaviour
         };
     }
 
-
     private void GameManager_OnGuess(NPC.NPCType type) {
         _currentNPCType = type;
         StartCoroutine(LoadGuessUIRoutine(type));
@@ -67,22 +68,30 @@ public class GuessUI : MonoBehaviour
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
         yield return titleSlideUI.SlideInRoutine();
+
+        var buttonsSlideUI = _answerButtons.GetComponent<SlideUI>();
+        yield return buttonsSlideUI.SlideInRoutine();
     }
 
     private IEnumerator ResetGuessUIRoutine(bool isCorrectAnswer) {
         _resultImage.sprite = isCorrectAnswer ? _resultSprites[0] : _resultSprites[1];
         var resultSlideUI = _resultImage.GetComponent<SlideUI>();
         yield return resultSlideUI.SlideInRoutine();
+        OnGuessResult?.Invoke(isCorrectAnswer);
 
+        yield return new WaitForSecondsRealtime(_resetDelay);
         var npcSlideUI = _npcImage.GetComponent<SlideUI>();
-        yield return npcSlideUI.SlideOutRoutine();
+        StartCoroutine(npcSlideUI.SlideOutRoutine());
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
-        yield return titleSlideUI.SlideOutRoutine();
+        StartCoroutine(titleSlideUI.SlideOutRoutine());
+
+        var buttonsSlideUI = _answerButtons.GetComponent<SlideUI>();
+        StartCoroutine(buttonsSlideUI.SlideOutRoutine());
 
         yield return resultSlideUI.SlideOutRoutine();
 
-        foreach (var button in _answersButtons) {
+        foreach (var button in _answersButtonsArray) {
             button.interactable = true;
             if (EventSystem.current.currentSelectedGameObject == button.gameObject) {
                 EventSystem.current.SetSelectedGameObject(null);
@@ -100,10 +109,10 @@ public class GuessUI : MonoBehaviour
 
     public IEnumerator OnAnswerSelectedRoutine(int index) {
         // set buttons to inactive except for selected answer        
-        for (int i = 0; i < _answersButtons.Length; i++) {
+        for (int i = 0; i < _answersButtonsArray.Length; i++) {
             if (i == index) continue;
 
-            _answersButtons[i].interactable = false;
+            _answersButtonsArray[i].interactable = false;
         }
 
         if (_npcTypeIndexDict.TryGetValue(_currentNPCType, out int correctIndex)) {
@@ -111,12 +120,11 @@ public class GuessUI : MonoBehaviour
                 Debug.Log("Answer was correct");
                 // TODO: yield return
                 yield return RevealImageRoutine();
-                yield return new WaitForSecondsRealtime(_resetDelay);
                 yield return ResetGuessUIRoutine(true);
-                OnGuessAnswer?.Invoke(true);
+                OnGuessEnd?.Invoke(true);
             } else {
                 yield return ResetGuessUIRoutine(false);
-                OnGuessAnswer?.Invoke(false);
+                OnGuessEnd?.Invoke(false);
             }
         } else {
             Debug.Log("Couldn't get index value from dict");

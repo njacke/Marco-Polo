@@ -53,10 +53,10 @@ public class GameOverUI : MonoBehaviour
 
     private IEnumerator ResetGameOverUIRoutine() {
         var skullSlideUI = _skullImage.GetComponent<SlideUI>();
-        yield return skullSlideUI.SlideOutRoutine();
+        StartCoroutine(skullSlideUI.SlideOutRoutine());
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
-        yield return titleSlideUI.SlideOutRoutine();
+        StartCoroutine(titleSlideUI.SlideOutRoutine());
 
         var retrySlideUI = _retryButton.GetComponent<SlideUI>();
         yield return retrySlideUI.SlideOutRoutine();      

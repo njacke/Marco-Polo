@@ -30,4 +30,9 @@ public class SoundWave : MonoBehaviour
             _myAnim.SetTrigger(WAVE_START_HASH);
         }
     }
+
+    public void ResetSoundWave() {
+        _myAnim.enabled = false;
+        _myAnim.enabled = true;
+    }
 }

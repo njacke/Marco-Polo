@@ -8,7 +8,7 @@ public class SlideUI : MonoBehaviour
     [SerializeField] private Vector3 _targetPos;
     [SerializeField] private float _slideDuration = 1f;
     [SerializeField] private float _slideDelay = 1f;
-    [SerializeField] private bool _slideInOnEnable = true;
+    [SerializeField] private bool _slideInOnStart = false;
     private RectTransform _rectTransform;
     private Vector3 _awakePos;
 
@@ -17,8 +17,8 @@ public class SlideUI : MonoBehaviour
         _awakePos = _rectTransform.localPosition;
     }
 
-    private void OnEnable() {
-        if (_slideInOnEnable) StartCoroutine(SlideInRoutine());
+    private void Start() {
+        if (_slideInOnStart) StartCoroutine(SlideInRoutine());
     }
 
     public IEnumerator SlideInRoutine() {

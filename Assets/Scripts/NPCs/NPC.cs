@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class NPC : MonoBehaviour
 {    
@@ -8,8 +9,12 @@ public class NPC : MonoBehaviour
     public static Action<NPC> OnCheatDetected;
 
     public NPCType GetNPCType { get => _npcType; }
+    public bool IsContestant { get => _isContestant; }
 
     [SerializeField] private SpriteRenderer _caughtVisual;
+    [SerializeField] private Transform _cheatVisual;
+    [SerializeField] private float _cheatVisualDuration = 1f;
+    [SerializeField] private float _cheatVisualTargetY = 1f;
     [SerializeField] private LayerMask _rcLayerMask;
     [SerializeField] private NPCType _npcType = NPCType.None;
     [SerializeField] private bool _isContestant = true;
@@ -18,10 +23,10 @@ public class NPC : MonoBehaviour
     [SerializeField] private float _idleStateChance = .2f;
     [SerializeField] private float _baseMoveSpeed = 100f;
     [SerializeField] private float _minFleeDist = 1.5f;
+    [SerializeField] private float _fleeDirAngle = 45f;
     [SerializeField] private float _detectCheatDist = 2.5f;
     
     private Rigidbody2D _rb;
-    private SpriteRenderer _spriteRenderer;
     private SoundWave _soundWave;
 
     private CurrentState _currentState = CurrentState.None;
@@ -46,7 +51,6 @@ public class NPC : MonoBehaviour
 
     private void Awake() {
         _rb = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();        
         _soundWave = GetComponentInChildren<SoundWave>();
 
         _currentMoveDir = GetRandomMoveDir();
@@ -54,11 +58,14 @@ public class NPC : MonoBehaviour
     }
 
     private void OnEnable() {
+        GameManager.OnGameStarted += GameManager_OnGameStarted;
         PlayerController.OnScan += PlayerController_OnScan;
         Blindfold.OnBlindfoldOpened += Blindfold_OnBlinfoldOpened;
     }
 
+
     private void OnDisable() {
+        GameManager.OnGameStarted -= GameManager_OnGameStarted;
         PlayerController.OnScan -= PlayerController_OnScan;
         Blindfold.OnBlindfoldOpened -= Blindfold_OnBlinfoldOpened;
     }
@@ -84,17 +91,11 @@ public class NPC : MonoBehaviour
     }
 
     private void HandleCaught() {
-        if (_isContestant) {
-            Debug.Log("I have been caught.");
-            _isCaught = true;
-            _caughtVisual.enabled = true;
-            _currentState = CurrentState.None;
-            OnCaughtNPC?.Invoke(this);
-        }
-        else if (_npcType == NPCType.Dog) {
-            // TODO: add dog logic
-            return;
-        }
+        Debug.Log("I have been caught.");
+        _isCaught = true;
+        _caughtVisual.enabled = true;
+        _currentState = CurrentState.None;
+        OnCaughtNPC?.Invoke(this);
     }
 
     private void StateUpdate() {
@@ -133,10 +134,18 @@ public class NPC : MonoBehaviour
 
         if (isInFleeRange) {
             _currentState = CurrentState.Move;
-            _currentMoveDir = -dir.normalized; // opposite of player direction
+            var rndAngle = UnityEngine.Random.Range(-_fleeDirAngle, _fleeDirAngle);
+            Quaternion rotation = Quaternion.AngleAxis(rndAngle, Vector3.forward);
+            var newDir = rotation * -dir.normalized;
+            _currentMoveDir = newDir;
         }
 
         return isInFleeRange;
+    }
+
+    private void GameManager_OnGameStarted() {
+        _isCaught = false;
+        _caughtVisual.enabled = false;
     }
 
     private void PlayerController_OnScan() {
@@ -146,24 +155,35 @@ public class NPC : MonoBehaviour
         _soundWave.TriggerSoundWave();
         //StartCoroutine(ScanResponseRoutine());
     }
-
-    private IEnumerator ScanResponseRoutine() {
-        _spriteRenderer.enabled = true;
-
-        yield return new WaitForSeconds(2f);
-
-        _spriteRenderer.enabled = false;
-    }
-
     private void Blindfold_OnBlinfoldOpened() {
         if(!_isContestant) return; // non-contestants don't detect cheating
 
         Vector2 rcDir = GameManager.Instance.GetCurrentPlayer.transform.position - transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, rcDir, _detectCheatDist, _rcLayerMask);
 
-        if (hit.collider != null && hit.collider.gameObject.GetComponent<PlayerController>()) {
+        // if player in cheat detection range + visible
+        if (hit.collider != null && hit.collider.gameObject.GetComponent<PlayerController>())
+        {
             Debug.Log("Cheating detected.");
             OnCheatDetected?.Invoke(this);
+        }
+    }
+
+    public IEnumerator DisplayCheatVisual() {
+        _cheatVisual.gameObject.SetActive(true);
+        Vector3 startPos = _cheatVisual.localPosition;
+        Vector3 targetPos = startPos + new Vector3(0f, _cheatVisualTargetY, 0f);
+
+        float timePassed = 0f;
+
+        while (_cheatVisual.localPosition != targetPos) {
+            timePassed += Time.deltaTime;
+            var linearT = timePassed / _cheatVisualDuration;
+            Vector3 newLocalPos = Vector3.Lerp(startPos, targetPos, linearT);
+
+            _cheatVisual.localPosition = newLocalPos;
+
+            yield return null;
         }
     }
 }
