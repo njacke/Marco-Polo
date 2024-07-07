@@ -7,9 +7,11 @@ public class WinScreenUI : MonoBehaviour
 {
     public static Action OnContinue;
 
+    [SerializeField] float _resetDelay = 1f;
     [SerializeField] Image _titleImage;
     [SerializeField] Image _trophyImage;
     [SerializeField] Button _continueButton;
+    private CursorManager _cursorManager;
 
     private void Awake() {
         Init();        
@@ -24,7 +26,7 @@ public class WinScreenUI : MonoBehaviour
     }
 
     private void Init() {
-
+        _cursorManager = GetComponentInChildren<CursorManager>();
     }
 
     private void GameManager_OnLevelCompleted() {
@@ -39,10 +41,17 @@ public class WinScreenUI : MonoBehaviour
         yield return titleSlideUI.SlideInRoutine();
 
         var continueSlideUI = _continueButton.GetComponent<SlideUI>();
-        yield return continueSlideUI.SlideInRoutine();      
+        yield return continueSlideUI.SlideInRoutine();  
+
+        _cursorManager.gameObject.SetActive(true);
+        _cursorManager.DisplayAndEnableCursor();    
     }
 
     private IEnumerator ResetWinScreenUIRoutine() {
+        yield return new WaitForSecondsRealtime(_resetDelay);
+        _cursorManager.DisableCursor();
+        _cursorManager.gameObject.SetActive(false);
+
         var trophySlideUI = _trophyImage.GetComponent<SlideUI>();
         StartCoroutine(trophySlideUI.SlideOutRoutine());
 

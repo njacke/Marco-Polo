@@ -1,26 +1,25 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CursorManager : MonoBehaviour
 {
-    [SerializeField] private float _cursorDisplayDelay = 0f;
     [SerializeField] private Sprite _cursorDefaultSprite;
     [SerializeField] private Sprite _cursorClickSprite;
+    [SerializeField] private bool _enableOnStart = false;
     private Image image;
 
     private void Awake() {
         image = GetComponent<Image>();
         image.sprite = _cursorDefaultSprite;
-        image.enabled = false;
     }
 
     private void Start() {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;     
+        DisableCursor(); 
 
-        StartCoroutine(CursorDisplayAndUnlockRoutine());
+        if (_enableOnStart) {
+            DisplayAndEnableCursor();
+        }
     }
 
     private void Update() {
@@ -39,8 +38,14 @@ public class CursorManager : MonoBehaviour
         Cursor.visible = false;
     }
 
-    private IEnumerator CursorDisplayAndUnlockRoutine() {
-        yield return new WaitForSecondsRealtime(_cursorDisplayDelay);
+    public void DisableCursor() {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;     
+        image.enabled = false;
+    }
+
+    public void DisplayAndEnableCursor() {
+        Debug.Log("Cursor display called");
         
         //confine cursor if not in Unity
         if (Application.isPlaying) {

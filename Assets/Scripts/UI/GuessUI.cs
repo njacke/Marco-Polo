@@ -25,6 +25,7 @@ public class GuessUI : MonoBehaviour
     [SerializeField] private Sprite[] _americanSprites;
     
     private NPC.NPCType _currentNPCType;
+    private CursorManager _cursorManager;
     private Dictionary<NPC.NPCType, Sprite[]> _npcTypeSpriteDict;
     private Dictionary<NPC.NPCType, int> _npcTypeIndexDict;
 
@@ -41,6 +42,8 @@ public class GuessUI : MonoBehaviour
     }
 
     private void Init() {    
+        _cursorManager = GetComponentInChildren<CursorManager>();
+
         _npcTypeSpriteDict = new Dictionary<NPC.NPCType, Sprite[]>() {
             { NPC.NPCType.Italian, _italianSprites },
             { NPC.NPCType.German, _germanSprites },
@@ -71,6 +74,9 @@ public class GuessUI : MonoBehaviour
 
         var buttonsSlideUI = _answerButtons.GetComponent<SlideUI>();
         yield return buttonsSlideUI.SlideInRoutine();
+
+        _cursorManager.gameObject.SetActive(true);
+        _cursorManager.DisplayAndEnableCursor();
     }
 
     private IEnumerator ResetGuessUIRoutine(bool isCorrectAnswer) {
@@ -80,6 +86,9 @@ public class GuessUI : MonoBehaviour
         OnGuessResult?.Invoke(isCorrectAnswer);
 
         yield return new WaitForSecondsRealtime(_resetDelay);
+        _cursorManager.DisableCursor();
+        _cursorManager.gameObject.SetActive(false);
+
         var npcSlideUI = _npcImage.GetComponent<SlideUI>();
         StartCoroutine(npcSlideUI.SlideOutRoutine());
 

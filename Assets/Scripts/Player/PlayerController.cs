@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
-using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static Action OnReady;
     public static Action OnScan;
     public static Action<float> OnCheat;
 
@@ -19,7 +18,8 @@ public class PlayerController : MonoBehaviour
     private GlobalCooldown _globalCooldown;
     private FrameInput _frameInput;
 
-    private bool _controlsLocked = false;
+    private bool _isReady = false;
+    private bool _controlsLocked = true;
 
     public enum SkillType {
         None,
@@ -37,14 +37,19 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update() {
-        _globalCooldown.TrackCooldown();
+        GatherInput();
+
+        if (!_isReady) {
+            HandleReady();
+        }
 
         if (!_controlsLocked) {
-            GatherInput();
+            _globalCooldown.TrackCooldown();
             HandleCatch();
             HandleScan();
             HandleCheat();
         }
+
     }
 
     private void FixedUpdate() {
@@ -73,6 +78,14 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = _baseMoveSpeed * Time.fixedDeltaTime * _frameInput.Move;
         //Debug.Log("New movement: " + movement);
         _rb.velocity = movement;
+    }
+
+    private void HandleReady() {
+        if (_frameInput.Cheat) {
+            Debug.Log("Player is ready.");
+            _isReady = true;
+            OnReady?.Invoke();
+        }
     }
 
     private void HandleCatch() {
@@ -122,6 +135,7 @@ public class PlayerController : MonoBehaviour
         if (isFinalStep) {
             _controlsLocked = false;
             Debug.Log("Unlocking Controls.");
+            _globalCooldown = new GlobalCooldown(_globalCooldownDuration);
             _globalCooldown.ResetCooldown();
         } else {
             _soundWave.TriggerSoundWave();

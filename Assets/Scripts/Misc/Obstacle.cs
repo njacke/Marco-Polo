@@ -45,5 +45,6 @@ public class Obstacle : MonoBehaviour
 
     private void GameManager_OnGameStarted() {
         _rb.velocity = Vector2.zero;
+        _soundWave.ResetSoundWave();
     }
 }

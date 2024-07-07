@@ -1,0 +1,146 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4015742904916389645
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7429072777785324881}
+  m_Layer: 7
+  m_Name: Terrace Border
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7429072777785324881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4015742904916389645}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3162327741120950723}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8932673364584353069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3162327741120950723}
+  - component: {fileID: 3066212702232776172}
+  m_Layer: 7
+  m_Name: Polygon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3162327741120950723
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8932673364584353069}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7429072777785324881}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &3066212702232776172
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8932673364584353069}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.18063688, y: 2.9918559}
+      - {x: 3.5832193, y: 2.9958308}
+      - {x: 6.937266, y: 2.8986793}
+      - {x: 11.014308, y: 2.8823118}
+      - {x: 13.945935, y: 2.8670177}
+      - {x: 13.946081, y: -2.3294356}
+      - {x: 13.165272, y: -3.3602688}
+      - {x: 14.625592, y: -3.4331727}
+      - {x: 14.681604, y: -3.3211472}
+      - {x: 14.904962, y: -2.788628}
+      - {x: 15.033521, y: 3.9775383}
+      - {x: 5.4056573, y: 3.9395623}
+      - {x: -0.9123831, y: 4.008167}
+      - {x: -0.9849796, y: 2.9529748}
+      - {x: -1.0189862, y: 0.3259994}
+      - {x: -1.063292, y: -0.82599944}
+      - {x: -0.8178153, y: -2.9549282}
+      - {x: 0.72538805, y: -4.379579}
+      - {x: 3.0000951, y: -5.0203967}
+      - {x: 9.20639, y: -5.1162095}
+      - {x: 12.349628, y: -4.9082847}
+      - {x: 13.328918, y: -4.4902406}
+      - {x: 14.494048, y: -3.6437867}
+      - {x: 14.587403, y: -3.4757485}
+      - {x: 13.124326, y: -3.441371}
+      - {x: 12.049022, y: -3.9969463}
+      - {x: 10.400059, y: -4.376313}
+      - {x: 7.120696, y: -4.2657766}
+      - {x: 5.8739843, y: -4.199259}
+      - {x: 4.271525, y: -4.2315803}
+      - {x: 2.5765948, y: -3.9768329}
+      - {x: 1.1850257, y: -3.4285848}
+      - {x: 0.53539324, y: -2.79177}
+      - {x: 0.104683876, y: -1.8103948}
+      - {x: 0.10487747, y: -0.71681374}
+  m_UseDelaunayMesh: 0

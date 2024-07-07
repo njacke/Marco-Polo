@@ -32,6 +32,7 @@ public class NPC : MonoBehaviour
     private CurrentState _currentState = CurrentState.None;
     private float _currentStateTime = 0f;
     private Vector2 _currentMoveDir = Vector2.zero;
+    private bool _movementLocked = true;
     private bool _isCaught = false;
 
     private enum CurrentState {
@@ -77,10 +78,12 @@ public class NPC : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        if (_currentState == CurrentState.None || _currentState == CurrentState.Idle) {
-            _rb.velocity = Vector2.zero;
-        } else if (_currentState == CurrentState.Move) {
-            Move();
+        if (!_movementLocked) {
+            if (_currentState == CurrentState.None || _currentState == CurrentState.Idle) {
+                _rb.velocity = Vector2.zero;
+            } else if (_currentState == CurrentState.Move) {
+                Move();
+            }
         }
     }
 
@@ -146,6 +149,8 @@ public class NPC : MonoBehaviour
     private void GameManager_OnGameStarted() {
         _isCaught = false;
         _caughtVisual.enabled = false;
+        _movementLocked = false;
+        _soundWave.ResetSoundWave();
     }
 
     private void PlayerController_OnScan() {

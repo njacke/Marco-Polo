@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,15 +17,26 @@ public class SkillsUI : MonoBehaviour
     }
 
     private void OnEnable() {
-        GameManager.OnGamePaused += SetOnCDSprites;
+        GameManager.OnLevelCompleted += GameManager_OnLevelCompleted;
+        GameManager.OnGamePaused += GameManager_OnGamePaused;
         GlobalCooldown.OnCooldownStart += GlobalCooldown_OnCooldownStart;
         GlobalCooldown.OnCooldownEnd += GlobalCooldown_OnCooldownEnd;
     }
 
+
     private void OnDisable() {
-        GameManager.OnGamePaused -= SetOnCDSprites;
+        GameManager.OnLevelCompleted -= GameManager_OnLevelCompleted;
+        GameManager.OnGamePaused -= GameManager_OnGamePaused;
         GlobalCooldown.OnCooldownStart -= GlobalCooldown_OnCooldownStart;        
         GlobalCooldown.OnCooldownEnd -= GlobalCooldown_OnCooldownEnd;
+    }
+    
+    private void GameManager_OnLevelCompleted() {
+        SetOnCDSprites();
+    }
+
+    private void GameManager_OnGamePaused() {
+        SetOnCDSprites();
     }
 
 

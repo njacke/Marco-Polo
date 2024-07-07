@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Blindfold : MonoBehaviour
 {
+    public static Action OnBlinfoldReady;
     public static Action OnBlindfoldOpened;
 
     [SerializeField] private Transform _topPart;
@@ -21,6 +22,7 @@ public class Blindfold : MonoBehaviour
     }
 
     private void OnEnable() {
+        PlayerController.OnReady += PlayerController_OnReady;
         PlayerController.OnCheat += PlayerController_OnCheat;
         NPC.OnCheatDetected += NPCController_OnCheatDetected;
         GameManager.OnLevelCompleted += GameManager_OnLevelCompleted;
@@ -28,6 +30,7 @@ public class Blindfold : MonoBehaviour
 
 
     private void OnDisable() {
+        PlayerController.OnReady -= PlayerController_OnReady;
         PlayerController.OnCheat -= PlayerController_OnCheat;        
         NPC.OnCheatDetected -= NPCController_OnCheatDetected;
         GameManager.OnLevelCompleted -= GameManager_OnLevelCompleted;
@@ -41,9 +44,19 @@ public class Blindfold : MonoBehaviour
         StartCoroutine(OpenBlindfoldRoutine(duration));
     }
 
+    private void PlayerController_OnReady() {
+        StartCoroutine(OnReadyRoutine());
+    }
+
+    private IEnumerator OnReadyRoutine() {
+        yield return CloseBlindfoldRoutine(_defaultDuration);
+        OnBlinfoldReady?.Invoke();
+    }
+
     private void PlayerController_OnCheat(float duration) {
         _blindfoldRoutine ??= StartCoroutine(OpenAndCloseBlindfoldRoutine(duration));
     }
+
     private void NPCController_OnCheatDetected(NPC sender) {
         StopAllCoroutines();
     }

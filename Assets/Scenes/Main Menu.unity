@@ -181,7 +181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2ce479a9e0269d54a9b2b392818a021e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9e024b476f246dd4894cef150967003b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -211,9 +211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2990e9cf39b958440b47a5894c730a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cursorDisplayDelay: 6
-  _cursorDefaultSprite: {fileID: 21300000, guid: 2ce479a9e0269d54a9b2b392818a021e, type: 3}
-  _cursorClickSprite: {fileID: 21300000, guid: 9e024b476f246dd4894cef150967003b, type: 3}
+  _defaultDisplayDelay: 1
+  _cursorDefaultSprite: {fileID: 21300000, guid: 9e024b476f246dd4894cef150967003b, type: 3}
+  _cursorClickSprite: {fileID: 21300000, guid: 2ce479a9e0269d54a9b2b392818a021e, type: 3}
+  _enableOnStart: 0
 --- !u!1 &386117394
 GameObject:
   m_ObjectHideFlags: 0

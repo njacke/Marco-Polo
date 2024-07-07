@@ -8,11 +8,13 @@ public class GameOverUI : MonoBehaviour
 {
     public static Action OnRetry;
 
+    [SerializeField] private float _resetDelay = 1f;
     [SerializeField] Image _titleImage;
     [SerializeField] private Sprite[] _titleSprites;
     [SerializeField] Image _skullImage;
     [SerializeField] Button _retryButton;
-
+    
+    private CursorManager _cursorManager;
     private Dictionary<GameManager.GameOverType, Sprite> _titleSpritesDict;
 
     private void Awake() {
@@ -28,6 +30,8 @@ public class GameOverUI : MonoBehaviour
     }
 
     private void Init() {
+        _cursorManager = GetComponentInChildren<CursorManager>();
+
         _titleSpritesDict = new Dictionary<GameManager.GameOverType, Sprite>() {
             { GameManager.GameOverType.Timer, _titleSprites[0] },
             { GameManager.GameOverType.Cheat, _titleSprites[1] },
@@ -48,10 +52,17 @@ public class GameOverUI : MonoBehaviour
         yield return titleSlideUI.SlideInRoutine();
 
         var retrySlideUI = _retryButton.GetComponent<SlideUI>();
-        yield return retrySlideUI.SlideInRoutine();      
+        yield return retrySlideUI.SlideInRoutine();     
+
+        _cursorManager.gameObject.SetActive(true);
+        _cursorManager.DisplayAndEnableCursor(); 
     }
 
     private IEnumerator ResetGameOverUIRoutine() {
+        yield return new WaitForSecondsRealtime(_resetDelay);
+        _cursorManager.DisableCursor();        
+        _cursorManager.gameObject.SetActive(false);
+
         var skullSlideUI = _skullImage.GetComponent<SlideUI>();
         StartCoroutine(skullSlideUI.SlideOutRoutine());
 

@@ -32,7 +32,6 @@ public class GameManager : Singleton<GameManager>
     public NPC CurrentCaughtNPC { get; private set; } = null;
     public GameObject GetCurrentPlayer { get => _currentPlayer; }
     public NPC[] GetCurrentNPCs { get => _currentNPCs; }
-    public float GetCheatGameOverDelay { get => _cheatGameOverDelay; }
 
     public enum Level {
         None,
@@ -58,6 +57,7 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void OnEnable() {
+        Blindfold.OnBlinfoldReady += Blindfold_OnBlindfoldReady;
         OnGameStarted += GameManager_OnGameStarted;
         NPC.OnCaughtNPC += NPC_OnNPCCaught;
         NPC.OnCheatDetected += NPC_OnCheatDetected;
@@ -69,6 +69,7 @@ public class GameManager : Singleton<GameManager>
 
 
     private void OnDisable() {
+        Blindfold.OnBlinfoldReady -= Blindfold_OnBlindfoldReady;
         OnGameStarted -= GameManager_OnGameStarted;
         NPC.OnCaughtNPC -= NPC_OnNPCCaught;        
         NPC.OnCheatDetected -= NPC_OnCheatDetected;
@@ -109,16 +110,20 @@ public class GameManager : Singleton<GameManager>
 
         OnGameObjectsInstantiated?.Invoke();
         Time.timeScale = 1f;
-        OnGameStarted?.Invoke();
 
         Debug.Log("Level: " + level.ToString() + " loaded successfully.");
     }
 
     private IEnumerator LoadGameOver(GameOverType gameOverType) {
+        Debug.Log("Game over called.");
         Time.timeScale = 0f;
         OnGamePaused?.Invoke();
         yield return new WaitForSecondsRealtime(_gameOverUIDisplayDelay);
         OnGameOver?.Invoke(gameOverType);
+    }
+
+    private void Blindfold_OnBlindfoldReady() {
+        OnGameStarted?.Invoke();
     }
 
     private void GameManager_OnGameStarted() {
