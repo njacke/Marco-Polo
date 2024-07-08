@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -10,35 +12,37 @@ public class GameManager : Singleton<GameManager>
     public static Action<GameOverType> OnGameOver;
     public static Action OnLevelCompleted;
     public static Action<NPC.NPCType> OnGuess;
-    public static Action OnGameObjectsInstantiated;
+    public static Action<Level> OnLevelLoaded;
+    public static Action OnContestantEliminated;
 
     [SerializeField] private float _guessUIDisplayDelay = 2f;
-    [SerializeField] private float _cheatGameOverDelay = 1f;
     [SerializeField] private float _gameOverUIDisplayDelay = 2f;
     [SerializeField] private float _backgroundImage;
     [SerializeField] private LevelDataSO[] _levelsData;
 
-    private Level _currentLevel;
-    private GameObject _currentPlayer;
-    private NPC[] _currentNPCs;
+    private Level _activeLevel;
+    private GameObject _activePlayer;
+    private NPC[] _activeNPCs;
+    private NPC.NPCType[] _startingNPCTypes;
     private int _contestantsCount = 0;
     private int _contestantsEliminated = 0;
 
     private Coroutine _npcCaughtRoutine;
     private bool _firstLevelLoaded = false; // TODO: remove when done testing
 
-    private readonly string SCENE_GAME_STRING = "Game";
-
     public NPC CurrentCaughtNPC { get; private set; } = null;
-    public GameObject GetCurrentPlayer { get => _currentPlayer; }
-    public NPC[] GetCurrentNPCs { get => _currentNPCs; }
+    public GameObject GetActivePlayer { get => _activePlayer; }
+    public Level GetActiveLevel { get => _activeLevel; }
+    public NPC[] GetActiveNPCs { get => _activeNPCs; }
+    public NPC.NPCType[] GetStartingNPCTypes { get => _startingNPCTypes; }
 
     public enum Level {
         None,
         Tutorial,
-        One,
-        Two,
-        Three
+        Pool,
+        Garden,
+        Terrace,
+        Lobby
     }
 
     public enum GameOverType {
@@ -49,10 +53,10 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    private void Start() {
+    private void Start() {        
         if (!_firstLevelLoaded) {
             _firstLevelLoaded = true;
-            LoadLevel(Level.Tutorial);
+            LoadLevel(Level.Pool);
         }
     }
 
@@ -64,7 +68,7 @@ public class GameManager : Singleton<GameManager>
         TimerUI.OnTimerStep += TimerUI_OnTimerStep;
         GuessUI.OnGuessEnd += GuessUI_OnGuessEnd;
         GameOverUI.OnRetry += GameOverUI_OnRetry;
-        WinScreenUI.OnContinue += WinScreenUI_OnContinue;
+        CompanionUI.OnContinue += CompanionUI_OnContinue;
     }
 
 
@@ -76,10 +80,10 @@ public class GameManager : Singleton<GameManager>
         TimerUI.OnTimerStep -= TimerUI_OnTimerStep;
         GuessUI.OnGuessEnd -= GuessUI_OnGuessEnd;
         GameOverUI.OnRetry -= GameOverUI_OnRetry;
-        WinScreenUI.OnContinue -= WinScreenUI_OnContinue;
+        CompanionUI.OnContinue -= CompanionUI_OnContinue;
     }
 
-    private async void LoadLevel(Level level) {
+    public async void LoadLevel(Level level) {
         _contestantsCount = 0;
         _contestantsEliminated = 0;
         var levelData = _levelsData.FirstOrDefault(data => data.LevelID == level);
@@ -93,22 +97,35 @@ public class GameManager : Singleton<GameManager>
         }
 
         // load scene async before instantiating objects
-        await SceneLoader.LoadSceneAsync(SCENE_GAME_STRING);
-        _currentLevel = level;
+        await SceneLoader.LoadSceneAsync(SceneLoader.SCENE_GAME_STRING);
+        _activeLevel = level;
 
-        // spawn player
-        _currentPlayer = Instantiate(levelData.PlayerPrefab, levelData.PlayerStartPos, Quaternion.identity);
+        // instantiate background
+        Instantiate(levelData.BackgroundPrefab, levelData.BackgroundPos, Quaternion.identity);
 
-        // spawn NPCs
-        _currentNPCs = new NPC[levelData.NpcsPrefabs.Length];
+        // instantiate border
+        Instantiate(levelData.BorderPrefab, levelData.BorderPos, Quaternion.identity);
+
+        // instantiate player
+        _activePlayer = Instantiate(levelData.PlayerPrefab, levelData.PlayerStartPos, Quaternion.identity);
+
+        // instantiate NPCs
+        _activeNPCs = new NPC[levelData.NpcsPrefabs.Length];
+        _startingNPCTypes = new NPC.NPCType[levelData.NpcsPrefabs.Length];
 
         for (int i = 0; i < levelData.NpcsPrefabs.Length; i++) {
             var newNPC = Instantiate(levelData.NpcsPrefabs[i], levelData.NpcsStarPos[i], Quaternion.identity).GetComponent<NPC>();
-            _currentNPCs[i] = newNPC;
+            _activeNPCs[i] = newNPC;
+            _startingNPCTypes[i] = newNPC.GetNPCType;
             if (newNPC.IsContestant) _contestantsCount++;
         }
 
-        OnGameObjectsInstantiated?.Invoke();
+        // instantiate obstacles
+        for (int i = 0; i < levelData.ObstaclesPrefabs.Length; i++) {
+            Instantiate(levelData.ObstaclesPrefabs[i], levelData.ObstaclesStartPos[i], Quaternion.identity);
+        }
+
+        OnLevelLoaded?.Invoke(_activeLevel);
         Time.timeScale = 1f;
 
         Debug.Log("Level: " + level.ToString() + " loaded successfully.");
@@ -128,16 +145,16 @@ public class GameManager : Singleton<GameManager>
 
     private void GameManager_OnGameStarted() {
         // set to defualt positions to avoid trapping NPCs after wrong guess
-        var levelData = _levelsData.FirstOrDefault(data => data.LevelID == _currentLevel);
-        for (int i = 0; i < _currentNPCs.Length; i++) {
-            if (_currentNPCs[i] != null) {
-                NPC npc = _currentNPCs[i].GetComponent<NPC>();
+        var levelData = _levelsData.FirstOrDefault(data => data.LevelID == _activeLevel);
+        for (int i = 0; i < _activeNPCs.Length; i++) {
+            if (_activeNPCs[i] != null) {
+                NPC npc = _activeNPCs[i].GetComponent<NPC>();
                 npc.transform.position = levelData.NpcsStarPos[i];
             }
         }
     }
 
-    private void NPC_OnCheatDetected(NPC sender) {
+    private void NPC_OnCheatDetected(NPC sender, bool waveTriggered) {
         StartCoroutine(OnCheatDetectedRoutine(sender));
     }
 
@@ -185,6 +202,7 @@ public class GameManager : Singleton<GameManager>
         if (isCorrectAnswer) {
             CurrentCaughtNPC.gameObject.SetActive(false);
             _contestantsEliminated++;
+            OnContestantEliminated?.Invoke();
         }
 
         Time.timeScale = 1f;
@@ -197,10 +215,21 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void GameOverUI_OnRetry() {
-        LoadLevel(_currentLevel);      
+        LoadLevel(_activeLevel);      
     }
 
-    private void WinScreenUI_OnContinue() {
-        // TODO: load next level/cinematic/whatever
+    private void CompanionUI_OnContinue() {
+        if (_activeLevel == Level.Pool) {
+            LoadLevel(Level.Garden);
+        }
+        if (_activeLevel  == Level.Garden) {
+            LoadLevel(Level.Terrace);
+        }
+        if (_activeLevel == Level.Terrace) {
+            LoadLevel(Level.Lobby);
+        }
+        if (_activeLevel == Level.Lobby) {
+            SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
+        }
     }
 }

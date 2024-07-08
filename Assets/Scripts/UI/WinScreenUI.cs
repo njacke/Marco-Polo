@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class WinScreenUI : MonoBehaviour
 {
     public static Action OnContinue;
+    public static Action OnTrophyDisplayed;
 
     [SerializeField] float _resetDelay = 1f;
     [SerializeField] Image _titleImage;
@@ -19,14 +20,23 @@ public class WinScreenUI : MonoBehaviour
 
     private void OnEnable() {
         GameManager.OnLevelCompleted += GameManager_OnLevelCompleted;
+
+        TutorialPopUpsUI.OnTutorialCompleted += TutorialPopUpsUI_OnTutorialCompleted;
     }
 
     private void OnDisable() {
         GameManager.OnLevelCompleted -= GameManager_OnLevelCompleted;
+
+        TutorialPopUpsUI.OnTutorialCompleted -= TutorialPopUpsUI_OnTutorialCompleted;
     }
+
 
     private void Init() {
         _cursorManager = GetComponentInChildren<CursorManager>();
+    }
+
+    private void TutorialPopUpsUI_OnTutorialCompleted() {
+        StartCoroutine(LoadWinScreenUIRoutine());
     }
 
     private void GameManager_OnLevelCompleted() {
@@ -36,6 +46,8 @@ public class WinScreenUI : MonoBehaviour
     private IEnumerator LoadWinScreenUIRoutine() {
         var trophySlideUI = _trophyImage.GetComponent<SlideUI>();
         yield return trophySlideUI.SlideInRoutine();
+
+        OnTrophyDisplayed?.Invoke();
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
         yield return titleSlideUI.SlideInRoutine();

@@ -53,9 +53,9 @@ public class TimerUI : MonoBehaviour
             yield return new WaitForSeconds(_timerStepDelay);
             _countdownImage.sprite = _timerSprites[i];
             if (i == _timerSprites.Length - 1) {
-                OnTimerStep?.Invoke(true, i); // final step (GO)
+                OnTimerStep?.Invoke(true, _timerSprites.Length - i); // final step (GO)
             } else { 
-                OnTimerStep?.Invoke(false, i);
+                OnTimerStep?.Invoke(false, _timerSprites.Length - i);
             }
         }
     }

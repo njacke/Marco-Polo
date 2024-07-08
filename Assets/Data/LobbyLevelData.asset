@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04968199b451cc942976b230b758f558, type: 3}
+  m_Name: LobbyLevelData
+  m_EditorClassIdentifier: 
+  LevelID: 5
+  BackgroundPrefab: {fileID: 8057066768091699665, guid: 17cd9929c0902574ba3f1478bdc9ebff, type: 3}
+  BackgroundPos: {x: 0.13, y: 0.3, z: 0}
+  BorderPrefab: {fileID: 3622636232560321099, guid: 141761e3f63be3340adaec311b787ba8, type: 3}
+  BorderPos: {x: 0, y: 0, z: 0}
+  PlayerPrefab: {fileID: 7381563924982986053, guid: c3af7d354090c83488a016479f953703, type: 3}
+  PlayerStartPos: {x: -0.25, y: -2.25, z: 0}
+  NpcsPrefabs:
+  - {fileID: 962139295188958027, guid: e674bc81882ab7f4b94df3c744e9afd6, type: 3}
+  - {fileID: 962139295188958027, guid: 6ab6702e9bf4c6548a33cc58bf338c6d, type: 3}
+  - {fileID: 962139295188958027, guid: c14975862bc8bb843ad7a3c4b355f7f5, type: 3}
+  - {fileID: 962139295188958027, guid: 2dea5f60fae499d478da66753112cf40, type: 3}
+  - {fileID: 962139295188958027, guid: ef813d10c14aaa946994fd52ef364efa, type: 3}
+  NpcsStarPos:
+  - {x: 5, y: 3, z: 0}
+  - {x: -5.5, y: 3.5, z: 0}
+  - {x: 2, y: 1, z: 0}
+  - {x: 1.25, y: -0.25, z: 0}
+  - {x: -3.75, y: 0.75, z: 0}
+  ObstaclesPrefabs:
+  - {fileID: 2617093568176761268, guid: c9a4279cf8277a54ab845a8171b51c70, type: 3}
+  - {fileID: 3203170965407202673, guid: 9c179eb5a1c90ca4f986c630e7b18c76, type: 3}
+  - {fileID: 3203170965407202673, guid: cbbfdb96fa9872744be3203a8806b54e, type: 3}
+  - {fileID: 3203170965407202673, guid: 7ff5dda03bf65384da3e6957a46a0515, type: 3}
+  ObstaclesStartPos:
+  - {x: -0.75, y: 1, z: 0}
+  - {x: 4, y: 1, z: 0}
+  - {x: -5.25, y: 1.75, z: 0}
+  - {x: -2.25, y: -1, z: 0}

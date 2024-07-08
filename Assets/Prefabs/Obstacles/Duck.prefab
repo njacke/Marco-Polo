@@ -8,9 +8,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1376712847811350149, guid: 3cee0e0acc7c50e4299994ddac6f1830, type: 3}
+      propertyPath: _obstacleType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4593839669638461937, guid: 3cee0e0acc7c50e4299994ddac6f1830, type: 3}
       propertyPath: m_Name
-      value: Obstacle_Bounce
+      value: Duck
       objectReference: {fileID: 0}
     - target: {fileID: 8800408114069530241, guid: 3cee0e0acc7c50e4299994ddac6f1830, type: 3}
       propertyPath: m_LocalPosition.x

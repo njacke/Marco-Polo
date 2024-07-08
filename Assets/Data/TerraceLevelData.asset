@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04968199b451cc942976b230b758f558, type: 3}
+  m_Name: TerraceLevelData
+  m_EditorClassIdentifier: 
+  LevelID: 4
+  BackgroundPrefab: {fileID: 1053977729587815176, guid: 55c228f1f2e5c4d4c924b1030f774b66, type: 3}
+  BackgroundPos: {x: 0, y: 0, z: 0}
+  BorderPrefab: {fileID: 4015742904916389645, guid: d597bb71ff29f5c45abfba23f234fa5b, type: 3}
+  BorderPos: {x: 0, y: 0, z: 0}
+  PlayerPrefab: {fileID: 7381563924982986053, guid: c3af7d354090c83488a016479f953703, type: 3}
+  PlayerStartPos: {x: 0, y: -2, z: 0}
+  NpcsPrefabs:
+  - {fileID: 962139295188958027, guid: e674bc81882ab7f4b94df3c744e9afd6, type: 3}
+  - {fileID: 962139295188958027, guid: 6ab6702e9bf4c6548a33cc58bf338c6d, type: 3}
+  - {fileID: 962139295188958027, guid: c14975862bc8bb843ad7a3c4b355f7f5, type: 3}
+  - {fileID: 962139295188958027, guid: 2dea5f60fae499d478da66753112cf40, type: 3}
+  - {fileID: 962139295188958027, guid: ef813d10c14aaa946994fd52ef364efa, type: 3}
+  NpcsStarPos:
+  - {x: -2.5, y: 2.5, z: 0}
+  - {x: -5.5, y: 0, z: 0}
+  - {x: 2.75, y: 2.75, z: 0}
+  - {x: 2.5, y: 1, z: 0}
+  - {x: 5.25, y: -0.5, z: 0}
+  ObstaclesPrefabs:
+  - {fileID: 2617093568176761268, guid: e32a18ab255421646ad463060d21ccb3, type: 3}
+  - {fileID: 2617093568176761268, guid: 7ec33d2e9cd7a474eae9c93c4bb80fe1, type: 3}
+  - {fileID: 2617093568176761268, guid: 7ec33d2e9cd7a474eae9c93c4bb80fe1, type: 3}
+  - {fileID: 2617093568176761268, guid: 7ec33d2e9cd7a474eae9c93c4bb80fe1, type: 3}
+  ObstaclesStartPos:
+  - {x: -5.25, y: 2.5, z: 0}
+  - {x: -2.5, y: -1.25, z: 0}
+  - {x: 3, y: -1.25, z: 0}
+  - {x: 0.25, y: 1.5, z: 0}

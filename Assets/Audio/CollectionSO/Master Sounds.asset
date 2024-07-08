@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46ad8aadd75c6f94788af9269456c955, type: 3}
+  m_Name: Master Sounds
+  m_EditorClassIdentifier: 
+  MainMenuMusic: []
+  EndGameMusic: []
+  LobbyMusic: []
+  PoolMusic: []
+  GardenMusic: []
+  TerraceMusic: []
+  MouseClick:
+  - {fileID: 11400000, guid: 996a18eb6ee1f0d4f899629315fb4959, type: 2}
+  - {fileID: 11400000, guid: 7007c570e0df5294d8c878904dc16611, type: 2}
+  - {fileID: 11400000, guid: 69ff972f28ace334ba5db7e5a69b4034, type: 2}
+  Beep:
+  - {fileID: 11400000, guid: 1edf1537842349c4bb82db630768814f, type: 2}
+  - {fileID: 11400000, guid: 11800b6ab6aa80a4fafc4f17f3959d3d, type: 2}
+  - {fileID: 11400000, guid: 84cbb98d0c7ace54abd1e2d6db085f0d, type: 2}
+  MenuSlide:
+  - {fileID: 11400000, guid: 29aee4de5fe5d6f4fa281e1dd221d15c, type: 2}
+  ButtonHighlight: []
+  ButtonSelect: []
+  CatchSkill:
+  - {fileID: 11400000, guid: 996a18eb6ee1f0d4f899629315fb4959, type: 2}
+  CheatSkill:
+  - {fileID: 11400000, guid: 996a18eb6ee1f0d4f899629315fb4959, type: 2}
+  Duck:
+  - {fileID: 11400000, guid: 3110430687528d8499107b72422ea851, type: 2}
+  - {fileID: 11400000, guid: 69a708e735762ce4482f209b4b665f94, type: 2}
+  - {fileID: 11400000, guid: 913042eced711b548b752609a8ae96c3, type: 2}
+  Tube:
+  - {fileID: 11400000, guid: bcd9b6bb49a3d3641b34549937f3fac6, type: 2}
+  Fountain:
+  - {fileID: 11400000, guid: bcd9b6bb49a3d3641b34549937f3fac6, type: 2}
+  Table:
+  - {fileID: 11400000, guid: b75793ab006164349ac078b6684713ca, type: 2}
+  Piano:
+  - {fileID: 11400000, guid: 7bc78faa15027264e931096d9da34608, type: 2}
+  Trolley:
+  - {fileID: 11400000, guid: 59ef0cf779ed2e146bf2c98714f75be1, type: 2}

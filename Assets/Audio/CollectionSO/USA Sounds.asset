@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c78fddd753e8e41b3a935582075d8e, type: 3}
+  m_Name: USA Sounds
+  m_EditorClassIdentifier: 
+  ScanResponse:
+  - {fileID: 11400000, guid: f56a23837c8d2844882362667c7cf1b9, type: 2}
+  - {fileID: 11400000, guid: fdc6d986dd2788e41ae7c01088c4630e, type: 2}
+  - {fileID: 11400000, guid: bc593d23c456371429ae12d5c129738b, type: 2}
+  CheatDetected: []
+  Caught: []
+  Random:
+  - {fileID: 11400000, guid: 7a52e2e19e987c14e86063dac407262a, type: 2}
+  - {fileID: 11400000, guid: ecebdd514d167c249bb78db9bf8a4225, type: 2}
+  - {fileID: 11400000, guid: cdc0c87b4c28ca04bbe42048844810ab, type: 2}
+  CorrectGuess: []
+  WrongGuess: []
+  Congrats:
+  - {fileID: 11400000, guid: cc3fcb472ac82574cb670311e565e163, type: 2}

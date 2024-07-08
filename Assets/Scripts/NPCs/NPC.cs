@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class NPC : MonoBehaviour
 {    
     public static Action<NPC> OnCaughtNPC;
-    public static Action<NPC> OnCheatDetected;
+    public static Action<NPC, bool> OnScanResponse;
+    public static Action<NPC, bool> OnCheatDetected;
+    public static Action<NPC> OnRandomVoice;
 
     public NPCType GetNPCType { get => _npcType; }
     public bool IsContestant { get => _isContestant; }
@@ -25,6 +26,11 @@ public class NPC : MonoBehaviour
     [SerializeField] private float _minFleeDist = 1.5f;
     [SerializeField] private float _fleeDirAngle = 45f;
     [SerializeField] private float _detectCheatDist = 2.5f;
+    [SerializeField] private float _minResponseDelay = .5f;
+    [SerializeField] private float _maxResponseDelay = 1f;
+    [SerializeField] private float _rndVoiceCD = 2f;
+    [SerializeField] private float _rndVoiceCDrange = .5f;
+    [SerializeField] private float _rndVoiceChance = .2f;
     
     private Rigidbody2D _rb;
     private SoundWave _soundWave;
@@ -34,6 +40,9 @@ public class NPC : MonoBehaviour
     private Vector2 _currentMoveDir = Vector2.zero;
     private bool _movementLocked = true;
     private bool _isCaught = false;
+    private float _rndVoiceCDRemaining = 0f;
+
+    private bool _isTutorial = false;
 
     private enum CurrentState {
         None,
@@ -56,12 +65,23 @@ public class NPC : MonoBehaviour
 
         _currentMoveDir = GetRandomMoveDir();
         _currentState = CurrentState.Move;
+        _rndVoiceCDRemaining = _rndVoiceCD;
+    }
+
+    private void Start() {
+        if (TutorialManager.Instance != null) {
+            _isTutorial = true;
+        }
+
+        _rndVoiceCDRemaining = UnityEngine.Random.Range(_rndVoiceCD - _rndVoiceCDrange, _rndVoiceCD + _rndVoiceCDrange);
     }
 
     private void OnEnable() {
         GameManager.OnGameStarted += GameManager_OnGameStarted;
         PlayerController.OnScan += PlayerController_OnScan;
         Blindfold.OnBlindfoldOpened += Blindfold_OnBlinfoldOpened;
+        TutorialPopUpsUI.OnTutorialCompleted += TutorialPopUpsUI_OnTutorialCompleted;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
     }
 
 
@@ -69,13 +89,21 @@ public class NPC : MonoBehaviour
         GameManager.OnGameStarted -= GameManager_OnGameStarted;
         PlayerController.OnScan -= PlayerController_OnScan;
         Blindfold.OnBlindfoldOpened -= Blindfold_OnBlinfoldOpened;
+        TutorialPopUpsUI.OnTutorialCompleted -= TutorialPopUpsUI_OnTutorialCompleted;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
     }
+    
 
     private void Update() {
-        if (!_isCaught && !FleeCheck()) {
-            StateUpdate();
+        if (!_isTutorial && !_isCaught && !FleeCheck()) {
+           StateUpdate();    
+        } 
+
+        if (!_isTutorial) {
+            TryUseRandomVoice();
         }
     }
+
 
     private void FixedUpdate() {
         if (!_movementLocked) {
@@ -132,7 +160,7 @@ public class NPC : MonoBehaviour
     }
 
     private bool FleeCheck() {
-        Vector3 dir = GameManager.Instance.GetCurrentPlayer.transform.position - transform.position;
+        Vector3 dir = GameManager.Instance.GetActivePlayer.transform.position - transform.position;
         bool isInFleeRange = dir.magnitude <= _minFleeDist;
 
         if (isInFleeRange) {
@@ -146,7 +174,31 @@ public class NPC : MonoBehaviour
         return isInFleeRange;
     }
 
+    private void TryUseRandomVoice() {
+        if (this.GetNPCType == NPCType.Dog) {
+            Debug.Log("Random voice cd remaining: " + _rndVoiceCDRemaining);
+        }
+        _rndVoiceCDRemaining -= Time.deltaTime;
+        if (_rndVoiceCDRemaining <= 0f) {
+            if (UnityEngine.Random.Range(0f, 1f) < _rndVoiceChance &&_soundWave.TriggerSoundWave()) {
+                Debug.Log("Using random voice.");
+                OnRandomVoice?.Invoke(this);          
+            }
+            _rndVoiceCDRemaining = UnityEngine.Random.Range(_rndVoiceCD - _rndVoiceCDrange, _rndVoiceCD + _rndVoiceCDrange);
+        }
+    }
+
+    private void TutorialPopUpsUI_OnDialogueBoxDisplayed() {
+        _soundWave.TriggerSoundWave();
+    }
+
+    private void TutorialPopUpsUI_OnTutorialCompleted() {
+        _isCaught = false;
+        _caughtVisual.enabled = false;
+        _soundWave.ResetSoundWave();
+    }
     private void GameManager_OnGameStarted() {
+        StopAllCoroutines(); // scan response has possible delay
         _isCaught = false;
         _caughtVisual.enabled = false;
         _movementLocked = false;
@@ -154,23 +206,39 @@ public class NPC : MonoBehaviour
     }
 
     private void PlayerController_OnScan() {
-        if (!_isContestant) return; // non-contestants don't respond
+        if (!_isContestant) return; // non-contestants/tutorial don't respond
 
-        Debug.Log("Scan response triggered!");
-        _soundWave.TriggerSoundWave();
-        //StartCoroutine(ScanResponseRoutine());
+        StartCoroutine(HandleOnScanRoutine());        
     }
-    private void Blindfold_OnBlinfoldOpened() {
-        if(!_isContestant) return; // non-contestants don't detect cheating
 
-        Vector2 rcDir = GameManager.Instance.GetCurrentPlayer.transform.position - transform.position;
+    private IEnumerator HandleOnScanRoutine() {
+        Debug.Log("On Scan routine triggered");
+        var delay = UnityEngine.Random.Range(_minResponseDelay, _maxResponseDelay);
+        yield return new WaitForSeconds(delay);
+        if (_soundWave.TriggerSoundWave()) {
+            OnScanResponse?.Invoke(this, true);
+        } else {
+            OnScanResponse?.Invoke(this, false);
+        }
+        _rndVoiceCDRemaining = _rndVoiceCD;
+    }
+
+    private void Blindfold_OnBlinfoldOpened() {
+        if(!_isContestant || _isTutorial) return; // non-contestants/tutorial don't detect cheating
+
+        Vector2 rcDir = GameManager.Instance.GetActivePlayer.transform.position - transform.position;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, rcDir, _detectCheatDist, _rcLayerMask);
 
         // if player in cheat detection range + visible
-        if (hit.collider != null && hit.collider.gameObject.GetComponent<PlayerController>())
-        {
+        if (hit.collider != null && hit.collider.gameObject.GetComponent<PlayerController>()) {
             Debug.Log("Cheating detected.");
-            OnCheatDetected?.Invoke(this);
+            
+            if (_soundWave.TriggerSoundWave()) {
+                OnCheatDetected?.Invoke(this, true);
+            } else {
+                OnCheatDetected?.Invoke(this, false);
+            }
+            _rndVoiceCDRemaining = _rndVoiceCD;
         }
     }
 

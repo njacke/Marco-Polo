@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: LevelDataTest
   m_EditorClassIdentifier: 
   LevelID: 1
-  BackgroundSprite: {fileID: 0}
+  BackgroundPrefab: {fileID: 8057066768091699665, guid: 17cd9929c0902574ba3f1478bdc9ebff, type: 3}
+  BackgroundPos: {x: 0, y: 0, z: 0}
+  BorderPrefab: {fileID: 3622636232560321099, guid: 141761e3f63be3340adaec311b787ba8, type: 3}
+  BorderPos: {x: 0, y: 0, z: 0}
   PlayerPrefab: {fileID: 7381563924982986053, guid: c3af7d354090c83488a016479f953703, type: 3}
   PlayerStartPos: {x: 0, y: -2.5, z: 0}
   NpcsPrefabs:
@@ -28,3 +31,5 @@ MonoBehaviour:
   - {x: -3, y: 2, z: 0}
   - {x: 3, y: 2, z: 0}
   - {x: 1.5, y: 1, z: 0}
+  ObstaclesPrefabs: []
+  ObstaclesStartPos: []

@@ -17,19 +17,27 @@ public class SoundWave : MonoBehaviour
         _myAnim = GetComponent<Animator>();
     }
 
-    private bool IsAnimInProgress() {
-        AnimatorStateInfo stateInfo = _myAnim.GetCurrentAnimatorStateInfo(0);
-        return stateInfo.fullPathHash == SOUND_WAVE_HASH;
+    public bool IsAnimInProgress() {
+        if (_myAnim != null) {
+            AnimatorStateInfo stateInfo = _myAnim.GetCurrentAnimatorStateInfo(0);
+            return stateInfo.fullPathHash == SOUND_WAVE_HASH;
+        }
+
+        return true;
     }
 
     private void EndAnimEvent() {
         _myAnim.SetTrigger(WAVE_END_HASH);
     }
     
-    public void TriggerSoundWave() {
+    public bool TriggerSoundWave() {
+        Debug.Log("Sound wave triggered.");
         if (!IsAnimInProgress()) {
+            Debug.Log("Setting trigger");
             _myAnim.SetTrigger(WAVE_START_HASH);
+            return true;
         }
+        return false;
     }
 
     public void ResetSoundWave() {

@@ -21,12 +21,12 @@ public class ContestantsUI : MonoBehaviour
     }
 
     private void OnEnable() {
-        GameManager.OnGameObjectsInstantiated += GameManager_OnGameObjectsInstantiated;
+        GameManager.OnLevelLoaded += GameManager_OnLevelLoaded;
         GuessUI.OnGuessResult += GuessUI_OnGuessResult;
     }
 
     private void OnDisable() {
-        GameManager.OnGameObjectsInstantiated -= GameManager_OnGameObjectsInstantiated;
+        GameManager.OnLevelLoaded -= GameManager_OnLevelLoaded;
         GuessUI.OnGuessResult -= GuessUI_OnGuessResult;
     }
 
@@ -50,8 +50,8 @@ public class ContestantsUI : MonoBehaviour
         }
     }
 
-    private void GameManager_OnGameObjectsInstantiated() {
-        NPC[] currentNPCs = GameManager.Instance.GetCurrentNPCs;
+    private void GameManager_OnLevelLoaded(GameManager.Level level) {
+        NPC[] currentNPCs = GameManager.Instance.GetActiveNPCs;
         foreach (var npc in currentNPCs) {
             if (npc != null && npc.IsContestant) {
                 if (_npcDisplayDict.TryGetValue(npc.GetNPCType, out var display)) {

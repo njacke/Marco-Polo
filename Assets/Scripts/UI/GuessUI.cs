@@ -35,10 +35,14 @@ public class GuessUI : MonoBehaviour
 
     private void OnEnable() {
         GameManager.OnGuess += GameManager_OnGuess;
+
+        TutorialPopUpsUI.OnCatchTutorialDone += TutorialPopUpsUI_OnCatchTutorialDone;
     }
 
     private void OnDisable() {
         GameManager.OnGuess -= GameManager_OnGuess;
+
+        TutorialPopUpsUI.OnCatchTutorialDone -= TutorialPopUpsUI_OnCatchTutorialDone;
     }
 
     private void Init() {    
@@ -59,12 +63,43 @@ public class GuessUI : MonoBehaviour
         };
     }
 
+    private void TutorialPopUpsUI_OnCatchTutorialDone() {
+        StartCoroutine(LoadGuessUIRoutine(TutorialManager.Instance.GetTutorialNPC.GetNPCType));
+    }
+
+
     private void GameManager_OnGuess(NPC.NPCType type) {
-        _currentNPCType = type;
+        if (TutorialManager.Instance != null) {
+            _currentNPCType = TutorialManager.Instance.GetTutorialNPC.GetNPCType;
+        } else {
+            _currentNPCType = type;
+        }
+
         StartCoroutine(LoadGuessUIRoutine(type));
     }
 
     private IEnumerator LoadGuessUIRoutine(NPC.NPCType type) {
+
+        if (TutorialManager.Instance != null) {
+            _answersButtonsArray[1].interactable = false;
+            _answersButtonsArray[2].interactable = false;
+            _answersButtonsArray[3].interactable = false;
+        }
+
+        else if (GameManager.Instance != null) {
+            switch (GameManager.Instance.GetActiveLevel) {
+                case GameManager.Level.Pool:
+                _answersButtonsArray[2].interactable = false;
+                _answersButtonsArray[3].interactable = false;
+                break;
+                case GameManager.Level.Garden:
+                _answersButtonsArray[3].interactable = false;
+                break;
+                default:
+                break;
+            }
+        }
+
         _npcImage.sprite = _npcTypeSpriteDict[type][0];
         var npcSlideUI = _npcImage.GetComponent<SlideUI>();
         yield return npcSlideUI.SlideInRoutine();
@@ -124,10 +159,14 @@ public class GuessUI : MonoBehaviour
             _answersButtonsArray[i].interactable = false;
         }
 
+        if (TutorialManager.Instance != null) {
+            Debug.Log("Setting NPC type for tutorial");
+            _currentNPCType = TutorialManager.Instance.GetTutorialNPC.GetNPCType;
+        }
+
         if (_npcTypeIndexDict.TryGetValue(_currentNPCType, out int correctIndex)) {
             if (index == correctIndex) {
                 Debug.Log("Answer was correct");
-                // TODO: yield return
                 yield return RevealImageRoutine();
                 yield return ResetGuessUIRoutine(true);
                 OnGuessEnd?.Invoke(true);

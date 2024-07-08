@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c78fddd753e8e41b3a935582075d8e, type: 3}
+  m_Name: ITA Sounds
+  m_EditorClassIdentifier: 
+  ScanResponse:
+  - {fileID: 11400000, guid: bb87d65917f395e4b8129d29c27163ea, type: 2}
+  - {fileID: 11400000, guid: 5b51f1520473e614d8399a7e330ec22b, type: 2}
+  CheatDetected: []
+  Caught: []
+  Random:
+  - {fileID: 11400000, guid: c5ef086efe429924da4cb00e5412b614, type: 2}
+  - {fileID: 11400000, guid: fa96ea9fb35c3c747bf4ffca6da917fa, type: 2}
+  - {fileID: 11400000, guid: 42a96a5c2adf06845ba00140040c4264, type: 2}
+  CorrectGuess: []
+  WrongGuess: []
+  Congrats: []

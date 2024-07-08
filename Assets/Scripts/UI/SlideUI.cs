@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 
 public class SlideUI : MonoBehaviour
 {
+    public static Action OnSlideStarted;
+
     [SerializeField] private Vector3 _targetPos;
     [SerializeField] private float _slideDuration = 1f;
     [SerializeField] private float _slideDelay = 1f;
@@ -22,10 +25,12 @@ public class SlideUI : MonoBehaviour
     }
 
     public IEnumerator SlideInRoutine() {
+        OnSlideStarted?.Invoke();
         yield return SlideToTargetRoutine(_targetPos);
     }
 
     public IEnumerator SlideOutRoutine() {
+        OnSlideStarted?.Invoke();
         yield return SlideToTargetRoutine(_awakePos);
     }
 
@@ -45,4 +50,9 @@ public class SlideUI : MonoBehaviour
             yield return null;
         }
     }
+    public void SetStartAndTargetPos (Vector3 startPos, Vector3 targetPos) {
+        _awakePos = startPos;
+        _targetPos = targetPos;
+    }
+    
 }

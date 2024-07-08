@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Blindfold : MonoBehaviour
 {
@@ -26,6 +26,7 @@ public class Blindfold : MonoBehaviour
         PlayerController.OnCheat += PlayerController_OnCheat;
         NPC.OnCheatDetected += NPCController_OnCheatDetected;
         GameManager.OnLevelCompleted += GameManager_OnLevelCompleted;
+        GuessUI.OnGuessEnd += GuessUI_OnGuessEnd;
     }
 
 
@@ -34,7 +35,9 @@ public class Blindfold : MonoBehaviour
         PlayerController.OnCheat -= PlayerController_OnCheat;        
         NPC.OnCheatDetected -= NPCController_OnCheatDetected;
         GameManager.OnLevelCompleted -= GameManager_OnLevelCompleted;
+        GuessUI.OnGuessEnd -= GuessUI_OnGuessEnd;
     }
+
 
     private void CloseBlindfold(float duration) {
         StartCoroutine(CloseBlindfoldRoutine(duration));
@@ -42,6 +45,12 @@ public class Blindfold : MonoBehaviour
 
     private void OpenBlindfold(float duration) {
         StartCoroutine(OpenBlindfoldRoutine(duration));
+    }
+
+    private void GuessUI_OnGuessEnd(bool isCorrectAnswer) {
+        if (isCorrectAnswer && TutorialManager.Instance != null) {
+            StartCoroutine(OpenBlindfoldRoutine(_defaultDuration));
+        }
     }
 
     private void PlayerController_OnReady() {
@@ -57,7 +66,7 @@ public class Blindfold : MonoBehaviour
         _blindfoldRoutine ??= StartCoroutine(OpenAndCloseBlindfoldRoutine(duration));
     }
 
-    private void NPCController_OnCheatDetected(NPC sender) {
+    private void NPCController_OnCheatDetected(NPC sender, bool waveTriggered) {
         StopAllCoroutines();
     }
 

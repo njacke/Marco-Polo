@@ -13,7 +13,13 @@ public class SkillsUI : MonoBehaviour
     [SerializeField] private Sprite[] _cheatImages;
 
     private void Start() {
-        SetOnCDSprites();      
+        SetOnCDSprites();   
+
+        if (TutorialManager.Instance != null) {
+            _catchImage.enabled = false;
+            _scanImage.enabled = false;
+            _cheatImage.enabled = false;
+        }   
     }
 
     private void OnEnable() {
@@ -21,6 +27,9 @@ public class SkillsUI : MonoBehaviour
         GameManager.OnGamePaused += GameManager_OnGamePaused;
         GlobalCooldown.OnCooldownStart += GlobalCooldown_OnCooldownStart;
         GlobalCooldown.OnCooldownEnd += GlobalCooldown_OnCooldownEnd;
+        TutorialPopUpsUI.OnEnableScan += TutorialPopUpsUI_OnEnableScan;
+        TutorialPopUpsUI.OnEnableCheat += TutorialPopUpsUI_OnEnableCheat;
+        TutorialPopUpsUI.OnEnableCatch += TutorialPopUpsUI_OnEnableCatch;
     }
 
 
@@ -29,8 +38,26 @@ public class SkillsUI : MonoBehaviour
         GameManager.OnGamePaused -= GameManager_OnGamePaused;
         GlobalCooldown.OnCooldownStart -= GlobalCooldown_OnCooldownStart;        
         GlobalCooldown.OnCooldownEnd -= GlobalCooldown_OnCooldownEnd;
+        TutorialPopUpsUI.OnEnableScan -= TutorialPopUpsUI_OnEnableScan;
+        TutorialPopUpsUI.OnEnableCheat -= TutorialPopUpsUI_OnEnableCheat;
+        TutorialPopUpsUI.OnEnableCatch -= TutorialPopUpsUI_OnEnableCatch;
     }
-    
+
+    private void TutorialPopUpsUI_OnEnableScan() {
+        _scanImage.sprite = _scanImages[0];
+        _scanImage.enabled = true;
+    }
+
+    private void TutorialPopUpsUI_OnEnableCheat() {
+        _cheatImage.sprite = _cheatImages[0];
+        _cheatImage.enabled = true;
+    }
+
+    private void TutorialPopUpsUI_OnEnableCatch() {
+        _catchImage.sprite = _catchImages[0];
+        _catchImage.enabled = true;
+    }
+
     private void GameManager_OnLevelCompleted() {
         SetOnCDSprites();
     }

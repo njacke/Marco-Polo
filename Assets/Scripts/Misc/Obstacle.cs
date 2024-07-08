@@ -1,19 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Callbacks;
 using UnityEngine;
+using System;
 
 public class Obstacle : MonoBehaviour
 {
+    public static Action<Obstacle> OnWaveTriggered;
+
     [SerializeField] private ObstacleType _obstacleType;
     [SerializeField] private float _triggerWaveCD = 1f;
     private Rigidbody2D _rb;
     private SoundWave _soundWave;
     private float _triggerWaveCDRemaning = 0f;
 
+    public ObstacleType GetObstacleType { get => _obstacleType; }
+
     public enum ObstacleType {
         None,
-        Duck
+        Duck,
+        Tube,
+        Fontain,
+        Table,
+        Piano,
+        Trolley
     }
 
     private void Awake() {
@@ -39,6 +46,7 @@ public class Obstacle : MonoBehaviour
             if (_triggerWaveCDRemaning <= 0f) {
                 _soundWave.TriggerSoundWave();
                 _triggerWaveCDRemaning = _triggerWaveCD;
+                OnWaveTriggered?.Invoke(this);
             }
         }
     }
