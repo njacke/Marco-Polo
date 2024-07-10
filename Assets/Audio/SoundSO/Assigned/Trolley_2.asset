@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd949a00f234cbe44b17b9cc793755a1, type: 3}
-  m_Name: Dog_bark_2
+  m_Name: Trolley_2
   m_EditorClassIdentifier: 
-  AudioType: 2
-  Clip: {fileID: 8300000, guid: 595caa0896addc74a937f49145384865, type: 3}
+  AudioType: 1
+  Clip: {fileID: 8300000, guid: 1d2bd964c57658d42995069a9dd289e7, type: 3}
   Loop: 0
   RandomizePitch: 1
   RandomPitchRangeModifier: 0.1

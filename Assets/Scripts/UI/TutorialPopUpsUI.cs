@@ -20,6 +20,7 @@ public class TutorialPopUpsUI : MonoBehaviour
     public static Action OnEnableScan;
     public static Action OnEnableCheat;
     public static Action OnEnableCatch;
+    public static Action OnMumTutorialDialogue;
     
 
     [SerializeField] private float _baseLucaDelay = 2f;
@@ -29,6 +30,7 @@ public class TutorialPopUpsUI : MonoBehaviour
     [SerializeField] private Sprite[] _lucaSprites;
     [SerializeField] private Vector3 _targetPos2;
     [SerializeField] private Vector3 _startPos2;
+    [SerializeField] private SoundWave _mumWave;
 
     private int _lucaSlideCount = 0;
     private int _mainSlideCount = 0;
@@ -139,6 +141,9 @@ public class TutorialPopUpsUI : MonoBehaviour
         yield return new WaitForSeconds(duration); // blind closes
         yield return _mainPopUpSlideUI.SlideOutRoutine();
 
+        // just make sure noone is around
+        yield return StartCoroutine(LucaBubbleRoutine());
+
         // can use any means to find me; i won't tell
         yield return StartCoroutine(LucaBubbleRoutine());
 
@@ -175,6 +180,8 @@ public class TutorialPopUpsUI : MonoBehaviour
 
     private IEnumerator OnBlinfoldReady() {
         yield return _mainPopUpSlideUI.SlideOutRoutine();
+        _mumWave.TriggerSoundWave();
+        OnMumTutorialDialogue?.Invoke();
         yield return new WaitForSecondsRealtime(_baseLucaDelay); // luca moved to new pos
 
         _lucaPopUp.transform.position = _startPos2;

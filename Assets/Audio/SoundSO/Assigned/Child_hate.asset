@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd949a00f234cbe44b17b9cc793755a1, type: 3}
-  m_Name: Dog_bark_2
+  m_Name: Child_hate
   m_EditorClassIdentifier: 
   AudioType: 2
-  Clip: {fileID: 8300000, guid: 595caa0896addc74a937f49145384865, type: 3}
+  Clip: {fileID: 8300000, guid: b6397d807a6fabc42ad39ede0ff39c97, type: 3}
   Loop: 0
-  RandomizePitch: 1
+  RandomizePitch: 0
   RandomPitchRangeModifier: 0.1
-  Volume: 1
+  Volume: 0.81
   Pitch: 1

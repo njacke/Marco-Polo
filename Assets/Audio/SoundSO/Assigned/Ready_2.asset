@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd949a00f234cbe44b17b9cc793755a1, type: 3}
-  m_Name: Ita_polo_4
+  m_Name: Ready_2
   m_EditorClassIdentifier: 
   AudioType: 2
-  Clip: {fileID: 8300000, guid: 1ed578dc5d318a84884e6048b6d81d97, type: 3}
+  Clip: {fileID: 8300000, guid: 8f2a34fc029014040bf4bbb2f72f99e4, type: 3}
   Loop: 0
   RandomizePitch: 1
   RandomPitchRangeModifier: 0.1

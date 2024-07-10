@@ -218,6 +218,7 @@ public class PlayerController : MonoBehaviour
         if (_frameInput.Cheat) {
             Debug.Log("Player is ready.");
             _isReady = true;
+            _soundWave.TriggerSoundWave();
             OnReady?.Invoke();
         }
     }
@@ -227,6 +228,8 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Catch skill has been used.");
             _catch.TriggerCatch();
             _globalCooldown.StartCooldown(SkillType.Catch);
+
+            OnCatch?.Invoke();
         }
     }
 

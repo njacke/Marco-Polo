@@ -50,6 +50,7 @@ public class TutorialManager : MonoBehaviour
 
     private void OnEnable() {
         TutorialPopUpsUI.OnIntroSlideComplete += TutorialPopUpsUI_OnIntroSlideComplete;
+        TutorialPopUpsUI.OnEnableScan += TutorialPopUpsUI_OnEnableScan;
         Blindfold.OnBlinfoldReady += Blindfold_OnBlindfoldReady;
         NPC.OnCaughtNPC += NPC_OnNPCCaught; 
         GuessUI.OnGuessEnd += GuessUI_OnGuessEnd;
@@ -58,6 +59,7 @@ public class TutorialManager : MonoBehaviour
 
     private void OnDisable() {
         TutorialPopUpsUI.OnIntroSlideComplete -= TutorialPopUpsUI_OnIntroSlideComplete;
+        TutorialPopUpsUI.OnEnableScan -= TutorialPopUpsUI_OnEnableScan;
         Blindfold.OnBlinfoldReady -= Blindfold_OnBlindfoldReady;
         NPC.OnCaughtNPC -= NPC_OnNPCCaught;        
         GuessUI.OnGuessEnd -= GuessUI_OnGuessEnd;
@@ -90,11 +92,13 @@ public class TutorialManager : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
+    private void TutorialPopUpsUI_OnEnableScan() {
+        _mum.SetActive(false);
+        _dad.SetActive(false);
+    }
     
     private void Blindfold_OnBlindfoldReady() {
         _lucaNPC.transform.position = _finalTargetPos;
-        _mum.SetActive(false);
-        _dad.SetActive(false);
     }
 
     private void TutorialPopUpsUI_OnIntroSlideComplete() {

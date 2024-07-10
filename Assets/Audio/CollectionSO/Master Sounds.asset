@@ -39,7 +39,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 69a708e735762ce4482f209b4b665f94, type: 2}
   - {fileID: 11400000, guid: 913042eced711b548b752609a8ae96c3, type: 2}
   Tube:
-  - {fileID: 11400000, guid: bcd9b6bb49a3d3641b34549937f3fac6, type: 2}
+  - {fileID: 11400000, guid: e7f1c2bfbf8b37245a55473664d9f784, type: 2}
   Fountain:
   - {fileID: 11400000, guid: bcd9b6bb49a3d3641b34549937f3fac6, type: 2}
   Table:

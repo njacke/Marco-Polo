@@ -20,6 +20,7 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] private AudioMixerGroup _musicMixerGroup;
     [SerializeField] private AudioMixerGroup _voiceMixerGroup;
     [SerializeField] private int _maxAudioSources = 15;
+    [SerializeField] private SoundSO _mumTutorialSound;
     private AudioSource _slideAudioSource;
     private AudioSource _currentMusic;
 
@@ -46,7 +47,9 @@ public class AudioManager : Singleton<AudioManager>
         CountdownUI.OnCountdownStep += CountdownUI_OnCountdownStep;
         CursorManager.OnMouseClick += CursorManager_OnMouseClick;
         SlideUI.OnSlideStarted += SlideUI_OnSlideStarted;
+        TutorialPopUpsUI.OnMumTutorialDialogue += TutorialPopUpsUI_OnMumTutorialDialogue;
     }
+
 
     private void OnDisable() {
         WinScreenUI.OnTrophyDisplayed -= WinScreenUI_OnTrophyDisplayed;
@@ -62,6 +65,13 @@ public class AudioManager : Singleton<AudioManager>
         CountdownUI.OnCountdownStep -= CountdownUI_OnCountdownStep;
         CursorManager.OnMouseClick -= CursorManager_OnMouseClick;
         SlideUI.OnSlideStarted += SlideUI_OnSlideStarted;
+        TutorialPopUpsUI.OnMumTutorialDialogue -= TutorialPopUpsUI_OnMumTutorialDialogue;
+    }
+
+    private void TutorialPopUpsUI_OnMumTutorialDialogue() {
+        if (TutorialManager.Instance != null) {
+            PlaySound(_mumTutorialSound);
+        }
     }
 
     private void SlideUI_OnSlideStarted() {
