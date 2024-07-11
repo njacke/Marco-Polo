@@ -69,6 +69,7 @@ public class GameManager : Singleton<GameManager>
         GuessUI.OnGuessEnd += GuessUI_OnGuessEnd;
         GameOverUI.OnRetry += GameOverUI_OnRetry;
         CompanionUI.OnContinue += CompanionUI_OnContinue;
+        MainMenuUI.OnMainMenuLoaded += MainMenuUI_OnMainMenuLoaded;
     }
 
 
@@ -81,6 +82,7 @@ public class GameManager : Singleton<GameManager>
         GuessUI.OnGuessEnd -= GuessUI_OnGuessEnd;
         GameOverUI.OnRetry -= GameOverUI_OnRetry;
         CompanionUI.OnContinue -= CompanionUI_OnContinue;
+        MainMenuUI.OnMainMenuLoaded -= MainMenuUI_OnMainMenuLoaded;
     }
 
     public async void LoadLevel(Level level) {
@@ -231,5 +233,9 @@ public class GameManager : Singleton<GameManager>
         if (_activeLevel == Level.Lobby) {
             SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
         }
+    }
+
+    private void MainMenuUI_OnMainMenuLoaded() {
+        Destroy(this.gameObject);
     }
 }

@@ -20,12 +20,13 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] private AudioMixerGroup _musicMixerGroup;
     [SerializeField] private AudioMixerGroup _voiceMixerGroup;
     [SerializeField] private int _maxAudioSources = 15;
+    [SerializeField] private float _mainMenuMusicDelay = 1f;
     [SerializeField] private SoundSO _mumTutorialSound;
     private AudioSource _slideAudioSource;
     private AudioSource _currentMusic;
 
-    private Queue<AudioSource> _audioSourcePool = new Queue<AudioSource>();
-    private List<AudioSource> _activeAudioSources = new List<AudioSource>();
+    private Queue<AudioSource> _audioSourcePool = new();
+    private List<AudioSource> _activeAudioSources = new();
 
     private Dictionary<NPC.NPCType, NPCVoicesCollection> _npcsVoicesDict;
     private Dictionary<GameManager.Level, SoundSO[]> _levelMusicDict; 
@@ -48,6 +49,9 @@ public class AudioManager : Singleton<AudioManager>
         CursorManager.OnMouseClick += CursorManager_OnMouseClick;
         SlideUI.OnSlideStarted += SlideUI_OnSlideStarted;
         TutorialPopUpsUI.OnMumTutorialDialogue += TutorialPopUpsUI_OnMumTutorialDialogue;
+        MainMenuUI.OnMainMenuLoaded += MainMenuUI_OnMainMenuLoaded;
+        TutorialManager.OnTutorialLoaded += TutorialManager_OnTutorialLoaded;
+        EndGameUI.OnEndGameMenuLoaded += EndGameUI_OnEndGameMenuLoaded;
     }
 
 
@@ -64,8 +68,23 @@ public class AudioManager : Singleton<AudioManager>
         Obstacle.OnWaveTriggered -= Obstacle_OnWaveTriggered;
         CountdownUI.OnCountdownStep -= CountdownUI_OnCountdownStep;
         CursorManager.OnMouseClick -= CursorManager_OnMouseClick;
-        SlideUI.OnSlideStarted += SlideUI_OnSlideStarted;
+        SlideUI.OnSlideStarted -= SlideUI_OnSlideStarted;
         TutorialPopUpsUI.OnMumTutorialDialogue -= TutorialPopUpsUI_OnMumTutorialDialogue;
+        MainMenuUI.OnMainMenuLoaded -= MainMenuUI_OnMainMenuLoaded;
+        TutorialManager.OnTutorialLoaded -= TutorialManager_OnTutorialLoaded;
+        EndGameUI.OnEndGameMenuLoaded -= EndGameUI_OnEndGameMenuLoaded;
+    }
+
+    private void EndGameUI_OnEndGameMenuLoaded() {
+        PlayRandomSound(_soundsCollectionSO.EndGameMusic, isMusic: true);
+    }
+
+    private void TutorialManager_OnTutorialLoaded() {
+        PlayRandomSound(_levelMusicDict[GameManager.Level.Tutorial], isMusic: true);
+    }
+
+    private void MainMenuUI_OnMainMenuLoaded() {
+        StartCoroutine(PlayRandomSoundWithDelay(_soundsCollectionSO.MainMenuMusic, isMusic: true, _mainMenuMusicDelay));
     }
 
     private void TutorialPopUpsUI_OnMumTutorialDialogue() {
@@ -128,7 +147,8 @@ public class AudioManager : Singleton<AudioManager>
         PlayRandomSound(_levelMusicDict[level], isMusic: true);
     }
 
-    private void Start() {
+    protected override void Awake() {
+        base.Awake();
         Init();
     }
 
@@ -190,12 +210,9 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private IEnumerator PlayRandomSoundWithDelay(SoundSO[] sounds, float delay) {
-        if (sounds != null && sounds.Length > 0) {
-            SoundSO soundSO = sounds[Random.Range(0, sounds.Length)];
-            yield return new WaitForSecondsRealtime(delay);
-            PlaySound(soundSO);
-        }
+    private IEnumerator PlayRandomSoundWithDelay(SoundSO[] sounds, bool isMusic = false, float delay = 0f) {
+        yield return new WaitForSecondsRealtime(delay);
+        PlayRandomSound(sounds, isMusic);
     }
 
     private void PlaySound(SoundSO soundSO) {
@@ -287,7 +304,7 @@ public class AudioManager : Singleton<AudioManager>
 
         foreach (var npcType in npcTypes) {
             var delay = UnityEngine.Random.Range(0f, _winVoiceMaxDelay);
-            StartCoroutine(PlayRandomSoundWithDelay(_npcsVoicesDict[npcType].Congrats, delay));
+            StartCoroutine(PlayRandomSoundWithDelay(_npcsVoicesDict[npcType].Congrats, false, delay));
         }
     }
 }

@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46ad8aadd75c6f94788af9269456c955, type: 3}
   m_Name: Master Sounds
   m_EditorClassIdentifier: 
-  MainMenuMusic: []
+  MainMenuMusic:
+  - {fileID: 11400000, guid: 191312ad83f2ff14d9c69a0d0bf9ba25, type: 2}
   EndGameMusic: []
-  LobbyMusic: []
-  PoolMusic: []
-  GardenMusic: []
-  TerraceMusic: []
+  LobbyMusic:
+  - {fileID: 11400000, guid: d6b1051a29f56884290e808c50c5f4bd, type: 2}
+  PoolMusic:
+  - {fileID: 11400000, guid: 8fc3677842dcdc34491f39a758324d8b, type: 2}
+  GardenMusic:
+  - {fileID: 11400000, guid: 0c2ee2d3eee2f2c4e83dfdd32984b32c, type: 2}
+  TerraceMusic:
+  - {fileID: 11400000, guid: 8449f79d901cafb4c8db3eb7f8726b2d, type: 2}
   MouseClick:
   - {fileID: 11400000, guid: 996a18eb6ee1f0d4f899629315fb4959, type: 2}
   - {fileID: 11400000, guid: 7007c570e0df5294d8c878904dc16611, type: 2}
