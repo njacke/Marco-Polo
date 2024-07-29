@@ -52,6 +52,7 @@ public class AudioManager : Singleton<AudioManager>
         MainMenuUI.OnMainMenuLoaded += MainMenuUI_OnMainMenuLoaded;
         TutorialManager.OnTutorialLoaded += TutorialManager_OnTutorialLoaded;
         EndGameUI.OnEndGameMenuLoaded += EndGameUI_OnEndGameMenuLoaded;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
     }
 
 
@@ -73,6 +74,11 @@ public class AudioManager : Singleton<AudioManager>
         MainMenuUI.OnMainMenuLoaded -= MainMenuUI_OnMainMenuLoaded;
         TutorialManager.OnTutorialLoaded -= TutorialManager_OnTutorialLoaded;
         EndGameUI.OnEndGameMenuLoaded -= EndGameUI_OnEndGameMenuLoaded;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
+    }
+
+    private void TutorialPopUpsUI_OnDialogueBoxDisplayed() {
+        ItaSpeech();
     }
 
     private void EndGameUI_OnEndGameMenuLoaded() {
@@ -306,5 +312,21 @@ public class AudioManager : Singleton<AudioManager>
             var delay = UnityEngine.Random.Range(0f, _winVoiceMaxDelay);
             StartCoroutine(PlayRandomSoundWithDelay(_npcsVoicesDict[npcType].Congrats, false, delay));
         }
+    }
+
+    public void ItaSpeech() {
+        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.Italian].Speech); 
+    }
+
+    public void GerSpeech() {
+        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.German].Speech); 
+    }
+
+    public void SpaSpeech() {
+        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.Spaniard].Speech); 
+    }
+
+    public void UsaSpeech() {
+        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.American].Speech); 
     }
 }

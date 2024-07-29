@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -20,7 +18,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private float _backgroundImage;
     [SerializeField] private LevelDataSO[] _levelsData;
 
-    private Level _activeLevel;
+    private Level _activeLevel = Level.None;
     private GameObject _activePlayer;
     private NPC[] _activeNPCs;
     private NPC.NPCType[] _startingNPCTypes;
@@ -54,10 +52,10 @@ public class GameManager : Singleton<GameManager>
 
 
     private void Start() {        
-        if (!_firstLevelLoaded) {
+/*         if (!_firstLevelLoaded) {
             _firstLevelLoaded = true;
             LoadLevel(Level.Pool);
-        }
+        } */
     }
 
     private void OnEnable() {
@@ -232,6 +230,28 @@ public class GameManager : Singleton<GameManager>
         }
         if (_activeLevel == Level.Lobby) {
             SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
+        }
+    }
+
+    public void LoadNextLevel() {
+        switch (_activeLevel) {
+            case Level.None:
+                LoadLevel(Level.Pool);
+                break;
+            case Level.Pool:
+                LoadLevel(Level.Garden);
+                break;
+            case Level.Garden:
+                LoadLevel(Level.Terrace);
+                break;
+            case Level.Terrace:
+                LoadLevel(Level.Lobby);
+                break;
+            case Level.Lobby:
+                SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
+                break;
+            default:
+                break;
         }
     }
 

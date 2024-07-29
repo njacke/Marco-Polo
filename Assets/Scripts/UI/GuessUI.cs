@@ -102,10 +102,10 @@ public class GuessUI : MonoBehaviour
 
         _npcImage.sprite = _npcTypeSpriteDict[type][0];
         var npcSlideUI = _npcImage.GetComponent<SlideUI>();
-        yield return npcSlideUI.SlideInRoutine();
+        StartCoroutine(npcSlideUI.SlideInRoutine());
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
-        yield return titleSlideUI.SlideInRoutine();
+        StartCoroutine(titleSlideUI.SlideInRoutine());
 
         var buttonsSlideUI = _answerButtons.GetComponent<SlideUI>();
         yield return buttonsSlideUI.SlideInRoutine();

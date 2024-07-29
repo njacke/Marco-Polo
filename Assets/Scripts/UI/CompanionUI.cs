@@ -77,12 +77,12 @@ public class CompanionUI : MonoBehaviour
 
     private IEnumerator LoadCompanionUIRoutine() {
         var companionSlideUI = _companionImage.GetComponent<SlideUI>();    
-        yield return companionSlideUI.SlideInRoutine();
+        StartCoroutine(companionSlideUI.SlideInRoutine());
 
         OnCompanionDisplayed?.Invoke();
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
-        yield return titleSlideUI.SlideInRoutine();
+        StartCoroutine(titleSlideUI.SlideInRoutine());
 
         var continueSlideUI = _continueButton.GetComponent<SlideUI>();
         yield return continueSlideUI.SlideInRoutine();  

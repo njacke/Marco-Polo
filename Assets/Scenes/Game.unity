@@ -844,7 +844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetPos: {x: 0, y: 360, z: 0}
   _slideDuration: 1
-  _slideDelay: 1
+  _slideDelay: 0
   _slideInOnStart: 0
 --- !u!1 &801706488573355095
 GameObject:
@@ -2590,7 +2590,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetPos: {x: 0, y: -240, z: 0}
   _slideDuration: 1
-  _slideDelay: 1
+  _slideDelay: 0
   _slideInOnStart: 0
 --- !u!1 &4778570677139688114
 GameObject:
@@ -2852,7 +2852,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetPos: {x: 0, y: 70, z: 0}
   _slideDuration: 1
-  _slideDelay: 1
+  _slideDelay: 0
   _slideInOnStart: 0
 --- !u!222 &5605793798131136741
 CanvasRenderer:

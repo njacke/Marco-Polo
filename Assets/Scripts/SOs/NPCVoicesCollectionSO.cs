@@ -11,5 +11,5 @@ public class NPCVoicesCollection : ScriptableObject
     public SoundSO[] CorrectGuess;
     public SoundSO[] WrongGuess;
     public SoundSO[] Congrats;
-
+    public SoundSO[] Speech;
 }

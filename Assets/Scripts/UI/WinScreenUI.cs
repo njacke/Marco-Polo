@@ -45,12 +45,12 @@ public class WinScreenUI : MonoBehaviour
 
     private IEnumerator LoadWinScreenUIRoutine() {
         var trophySlideUI = _trophyImage.GetComponent<SlideUI>();
-        yield return trophySlideUI.SlideInRoutine();
+        StartCoroutine(trophySlideUI.SlideInRoutine());
 
         OnTrophyDisplayed?.Invoke();
 
         var titleSlideUI = _titleImage.GetComponent<SlideUI>();
-        yield return titleSlideUI.SlideInRoutine();
+        StartCoroutine(titleSlideUI.SlideInRoutine());
 
         var continueSlideUI = _continueButton.GetComponent<SlideUI>();
         yield return continueSlideUI.SlideInRoutine();  

@@ -22,3 +22,5 @@ MonoBehaviour:
   CorrectGuess: []
   WrongGuess: []
   Congrats: []
+  Speech:
+  - {fileID: 11400000, guid: bfb13d110a155cd41bee25e8c28a8764, type: 2}
