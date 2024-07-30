@@ -38,17 +38,22 @@ public class CompanionUI : MonoBehaviour
         bool imageFound = false;
 
         if (TutorialManager.Instance != null) {
-            _companionImage.sprite = _gerImage;
-            _npcName.sprite = _gerName;
+            _companionImage.sprite = _itaImage;
+            _npcName.sprite = _itaName;
             imageFound = true;
         } else if (GameManager.Instance != null) {
             switch (GameManager.Instance.GetActiveLevel) {
                 case GameManager.Level.Pool:
+                    _companionImage.sprite = _gerImage;
+                    _npcName.sprite = _gerName;
+                    imageFound = true;
+                    break;
+                case GameManager.Level.Garden:
                     _companionImage.sprite = __spaImage;
                     _npcName.sprite = __spaName;
                     imageFound = true;
                     break;
-                case GameManager.Level.Garden:
+                case GameManager.Level.Terrace:
                     _companionImage.sprite = _usaImage;
                     _npcName.sprite = _usaName;
                     imageFound = true;

@@ -9,13 +9,12 @@ public class TutorialManager : MonoBehaviour
     public static Action<NPC.NPCType> OnGuess;
     public static Action OnContestantEliminated;
 
-
     public static Action OnTutorialLoaded;
     public static Action OnMoveTutorialDone;
     public static Action OnLucaMoved;
     public static Action OnScanTutorialDone;
     public static Action OnFindTutorialDone;
-
+    
     public static TutorialManager Instance;
 
     [SerializeField] private NPC _lucaNPC;
@@ -128,6 +127,6 @@ public class TutorialManager : MonoBehaviour
     }
 
     private void CompanionUI_OnContinue() {
-        SceneLoader.LoadScene("Game");
+        SceneLoader.LoadScene(SceneLoader.SCENE_CINEMATIC_POOL);
     }
 }

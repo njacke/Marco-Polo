@@ -53,6 +53,7 @@ public class AudioManager : Singleton<AudioManager>
         TutorialManager.OnTutorialLoaded += TutorialManager_OnTutorialLoaded;
         EndGameUI.OnEndGameMenuLoaded += EndGameUI_OnEndGameMenuLoaded;
         TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        GameManager.OnCinematicLoaded += GameManager_OnCinematicLoaded;
     }
 
 
@@ -74,7 +75,12 @@ public class AudioManager : Singleton<AudioManager>
         MainMenuUI.OnMainMenuLoaded -= MainMenuUI_OnMainMenuLoaded;
         TutorialManager.OnTutorialLoaded -= TutorialManager_OnTutorialLoaded;
         EndGameUI.OnEndGameMenuLoaded -= EndGameUI_OnEndGameMenuLoaded;
-        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed -= TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        GameManager.OnCinematicLoaded -= GameManager_OnCinematicLoaded;
+    }
+
+    private void GameManager_OnCinematicLoaded(GameManager.Level level) {
+        PlayRandomSound(_levelMusicDict[level], isMusic: true);
     }
 
     private void TutorialPopUpsUI_OnDialogueBoxDisplayed() {

@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
     public static Action<NPC.NPCType> OnGuess;
     public static Action<Level> OnLevelLoaded;
     public static Action OnContestantEliminated;
+    public static Action<Level> OnCinematicLoaded;
 
     [SerializeField] private float _guessUIDisplayDelay = 2f;
     [SerializeField] private float _gameOverUIDisplayDelay = 2f;
@@ -26,7 +27,7 @@ public class GameManager : Singleton<GameManager>
     private int _contestantsEliminated = 0;
 
     private Coroutine _npcCaughtRoutine;
-    private bool _firstLevelLoaded = false; // TODO: remove when done testing
+    private bool _firstCinematicLoaded = false;
 
     public NPC CurrentCaughtNPC { get; private set; } = null;
     public GameObject GetActivePlayer { get => _activePlayer; }
@@ -40,7 +41,8 @@ public class GameManager : Singleton<GameManager>
         Pool,
         Garden,
         Terrace,
-        Lobby
+        Lobby,
+        Epilogue
     }
 
     public enum GameOverType {
@@ -48,14 +50,6 @@ public class GameManager : Singleton<GameManager>
         Timer,
         Cheat,
         Bite
-    }
-
-
-    private void Start() {        
-/*         if (!_firstLevelLoaded) {
-            _firstLevelLoaded = true;
-            LoadLevel(Level.Pool);
-        } */
     }
 
     private void OnEnable() {
@@ -68,6 +62,7 @@ public class GameManager : Singleton<GameManager>
         GameOverUI.OnRetry += GameOverUI_OnRetry;
         CompanionUI.OnContinue += CompanionUI_OnContinue;
         MainMenuUI.OnMainMenuLoaded += MainMenuUI_OnMainMenuLoaded;
+        CinematicManager.OnCinematicLoaded += CinematicManager_OnCinematicLoaded;
     }
 
 
@@ -81,6 +76,29 @@ public class GameManager : Singleton<GameManager>
         GameOverUI.OnRetry -= GameOverUI_OnRetry;
         CompanionUI.OnContinue -= CompanionUI_OnContinue;
         MainMenuUI.OnMainMenuLoaded -= MainMenuUI_OnMainMenuLoaded;
+        CinematicManager.OnCinematicLoaded -= CinematicManager_OnCinematicLoaded;
+    }
+
+
+    public async void LoadCinematic(Level level) {
+        string sceneName = level switch {
+            Level.Pool => SceneLoader.SCENE_CINEMATIC_POOL,
+            Level.Garden => SceneLoader.SCENE_CINEMATIC_GARDEN,
+            Level.Terrace => SceneLoader.SCENE_CINEMATIC_TERRACE,
+            Level.Lobby => SceneLoader.SCENE_CINEMATIC_LOBBY,
+            Level.Epilogue => SceneLoader.SCENE_CINEMATIC_EPILOGUE,
+            _ => null,
+        };
+
+        if (sceneName == null) {
+            Debug.Log("Invalid cinematic scene name. Scene not loaded.");
+        } else {
+            await SceneLoader.LoadSceneAsync(sceneName);
+            _activeLevel = level;
+            OnCinematicLoaded?.Invoke(level);
+
+            Debug.Log(level.ToString() + " cinematic loaded successfully.");
+        }
     }
 
     public async void LoadLevel(Level level) {
@@ -220,34 +238,34 @@ public class GameManager : Singleton<GameManager>
 
     private void CompanionUI_OnContinue() {
         if (_activeLevel == Level.Pool) {
-            LoadLevel(Level.Garden);
+            LoadCinematic(Level.Garden);
         }
         if (_activeLevel  == Level.Garden) {
-            LoadLevel(Level.Terrace);
+            LoadCinematic(Level.Terrace);
         }
         if (_activeLevel == Level.Terrace) {
-            LoadLevel(Level.Lobby);
+            LoadCinematic(Level.Lobby);
         }
         if (_activeLevel == Level.Lobby) {
-            SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
+            LoadCinematic(Level.Epilogue);
         }
     }
 
-    public void LoadNextLevel() {
+    public void LoadActiveLevel() {
         switch (_activeLevel) {
-            case Level.None:
+            case Level.Pool:
                 LoadLevel(Level.Pool);
                 break;
-            case Level.Pool:
+            case Level.Garden:
                 LoadLevel(Level.Garden);
                 break;
-            case Level.Garden:
+            case Level.Terrace:
                 LoadLevel(Level.Terrace);
                 break;
-            case Level.Terrace:
+            case Level.Lobby:
                 LoadLevel(Level.Lobby);
                 break;
-            case Level.Lobby:
+            case Level.Epilogue: // end game since no level
                 SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
                 break;
             default:
@@ -257,5 +275,14 @@ public class GameManager : Singleton<GameManager>
 
     private void MainMenuUI_OnMainMenuLoaded() {
         Destroy(this.gameObject);
+    }
+
+    private void CinematicManager_OnCinematicLoaded() {
+         // pool is always first cinematic, loaded from tutorial manager
+        if (!_firstCinematicLoaded) {
+            _firstCinematicLoaded = true;
+            _activeLevel = Level.Pool;
+            OnCinematicLoaded?.Invoke(Level.Pool);
+        }
     }
 }

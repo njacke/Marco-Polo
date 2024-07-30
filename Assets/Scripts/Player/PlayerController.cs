@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
         TutorialManager.OnScanTutorialDone += TutorialManager_OnScanTutorialDone;
         TutorialPopUpsUI.OnCheatSlideDisplayed += TutorialPopUpsUI_OnCheatSlideDisplayed;
         TutorialPopUpsUI.OnCheatTutorialDone += TutorialPopUpsUI_OnCheatTutorialDone;
+        TutorialPopUpsUI.OnFindSlideDisplayed += TutorialPopUpsUI_OnFindSlideDisplayed;
         TutorialManager.OnFindTutorialDone += TutorialManager_OnFindTutorialDone;
         TutorialPopUpsUI.OnCatchSlideDisplayed += TutorialPopUpsUI_OnCatchSlideDisplayed;
         NPC.OnCaughtNPC += NPC_OnNPCCaught;         
@@ -126,13 +127,12 @@ public class PlayerController : MonoBehaviour
         TutorialPopUpsUI.OnScanSlideDisplayed -= TutorialManager_OnScanSlideDisplayed;
         TutorialManager.OnScanTutorialDone -= TutorialManager_OnScanTutorialDone;
         TutorialPopUpsUI.OnCheatSlideDisplayed -= TutorialPopUpsUI_OnCheatSlideDisplayed;
-        TutorialPopUpsUI.OnCheatTutorialDone -= TutorialPopUpsUI_OnCheatTutorialDone;
+        TutorialPopUpsUI.OnCheatTutorialDone += TutorialPopUpsUI_OnCheatTutorialDone;
+        TutorialPopUpsUI.OnFindSlideDisplayed -= TutorialPopUpsUI_OnFindSlideDisplayed;
         TutorialManager.OnFindTutorialDone -= TutorialManager_OnFindTutorialDone;
         TutorialPopUpsUI.OnCatchSlideDisplayed -= TutorialPopUpsUI_OnCatchSlideDisplayed;
         NPC.OnCaughtNPC -= NPC_OnNPCCaught;   
     }
-
-
 
 
     // TUTORIAL
@@ -157,11 +157,18 @@ public class PlayerController : MonoBehaviour
         _rb.velocity = Vector2.zero; 
     }
 
-    private void TutorialPopUpsUI_OnCheatTutorialDone() {
+    private void TutorialPopUpsUI_OnFindSlideDisplayed() {
         _movementLocked = false;
         _scanLocked = false;
+        _cheatLocked = false;
         _frameInput = new FrameInput();
         _rb.velocity = Vector2.zero;        
+    }
+
+    private void TutorialPopUpsUI_OnCheatTutorialDone() {
+        _cheatLocked = true;
+        _frameInput = new FrameInput();
+        _rb.velocity = Vector2.zero;  
     }
 
     private void TutorialPopUpsUI_OnCheatSlideDisplayed() {

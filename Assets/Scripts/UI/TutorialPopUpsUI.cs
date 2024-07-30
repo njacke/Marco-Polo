@@ -12,6 +12,7 @@ public class TutorialPopUpsUI : MonoBehaviour
     public static Action OnScanSlideDisplayed;
     public static Action OnCheatSlideDisplayed;
     public static Action OnCheatTutorialDone;
+    public static Action OnFindSlideDisplayed;
     public static Action OnCatchSlideDisplayed;
     public static Action OnGuessSlideDisplayed;
     public static Action OnCatchTutorialDone;
@@ -139,6 +140,7 @@ public class TutorialPopUpsUI : MonoBehaviour
     private IEnumerator OnCheat(float duration) {
         _cheatDone = true;
         yield return new WaitForSeconds(duration); // blind closes
+        OnCheatTutorialDone?.Invoke();
         yield return _mainPopUpSlideUI.SlideOutRoutine();
 
         // just make sure noone is around
@@ -151,7 +153,7 @@ public class TutorialPopUpsUI : MonoBehaviour
        _mainPopUpImage.sprite = _mainSprites[_mainSlideCount];
         _mainSlideCount++;
         yield return _mainPopUpSlideUI.SlideInRoutine(); // find Luca
-        OnCheatTutorialDone?.Invoke();
+        OnFindSlideDisplayed?.Invoke();
     }
 
     private void TutorialManager_OnScanTutorialDone() {

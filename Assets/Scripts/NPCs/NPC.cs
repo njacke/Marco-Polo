@@ -175,9 +175,6 @@ public class NPC : MonoBehaviour
     }
 
     private void TryUseRandomVoice() {
-        if (this.GetNPCType == NPCType.Dog) {
-            Debug.Log("Random voice cd remaining: " + _rndVoiceCDRemaining);
-        }
         _rndVoiceCDRemaining -= Time.deltaTime;
         if (_rndVoiceCDRemaining <= 0f) {
             if (UnityEngine.Random.Range(0f, 1f) < _rndVoiceChance &&_soundWave.TriggerSoundWave()) {
