@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c64f855ecd4265419826da072c86439, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resetDelay: 1
+  _resetDelay: 0.5
   _titleImage: {fileID: 5194787848692050921}
   _trophyImage: {fileID: 5161414990250573978}
   _continueButton: {fileID: 2438495282156767056}

@@ -19,6 +19,12 @@ public class EndGameUI : MonoBehaviour
 
     private IEnumerator LoadMainMenuRoutine() {
         yield return new WaitForSecondsRealtime(_loadTutorialDelay);
+
+        var transitionUI = FindObjectOfType<TransitionUI>();
+        if (transitionUI != null) {
+            yield return transitionUI.FadeInRoutine();
+        }
+        
         SceneLoader.LoadSceneAsync(SceneLoader.SCENE_MAIN_MENU_STRING);
     }
 }

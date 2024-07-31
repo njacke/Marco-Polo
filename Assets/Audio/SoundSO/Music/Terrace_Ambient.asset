@@ -17,5 +17,5 @@ MonoBehaviour:
   Loop: 1
   RandomizePitch: 0
   RandomPitchRangeModifier: 0.1
-  Volume: 0.36
+  Volume: 1.3
   Pitch: 1

@@ -31,9 +31,9 @@ public class SoundWave : MonoBehaviour
     }
     
     public bool TriggerSoundWave() {
-        Debug.Log("Sound wave triggered.");
+        //Debug.Log("Sound wave triggered.");
         if (!IsAnimInProgress()) {
-            Debug.Log("Setting trigger");
+            //Debug.Log("Setting trigger");
             _myAnim.SetTrigger(WAVE_START_HASH);
             return true;
         }

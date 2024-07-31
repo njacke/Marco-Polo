@@ -127,6 +127,15 @@ public class TutorialManager : MonoBehaviour
     }
 
     private void CompanionUI_OnContinue() {
+        StartCoroutine(LoadPoolCinematic());
+    }
+
+    private IEnumerator LoadPoolCinematic() {
+        var transitionUI = FindObjectOfType<TransitionUI>();
+        if (transitionUI != null) {
+            yield return transitionUI.FadeInRoutine();
+        }
+
         SceneLoader.LoadScene(SceneLoader.SCENE_CINEMATIC_POOL);
     }
 }

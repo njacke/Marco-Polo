@@ -18,6 +18,12 @@ public class MainMenuUI : MonoBehaviour
 
     private IEnumerator LoadTutorialRoutine() {
         yield return new WaitForSecondsRealtime(_loadTutorialDelay);
+
+        var transitionUI = FindObjectOfType<TransitionUI>();
+        if (transitionUI != null) {
+            yield return transitionUI.FadeInRoutine();
+        }
+        
         SceneLoader.LoadSceneAsync(SceneLoader.SCENE_TUTORIAL_STRING);
     }
 }

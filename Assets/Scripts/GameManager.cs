@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -80,7 +81,7 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    public async void LoadCinematic(Level level) {
+    public IEnumerator LoadCinematicRoutine(Level level) {
         string sceneName = level switch {
             Level.Pool => SceneLoader.SCENE_CINEMATIC_POOL,
             Level.Garden => SceneLoader.SCENE_CINEMATIC_GARDEN,
@@ -92,8 +93,16 @@ public class GameManager : Singleton<GameManager>
 
         if (sceneName == null) {
             Debug.Log("Invalid cinematic scene name. Scene not loaded.");
-        } else {
-            await SceneLoader.LoadSceneAsync(sceneName);
+            yield break;
+        } else {    
+            var transitionUI = FindObjectOfType<TransitionUI>();
+            if (transitionUI != null) {
+                yield return transitionUI.FadeInRoutine();
+                Debug.Log("Transition routine finished.");
+            }
+
+            SceneLoader.LoadScene(sceneName);
+
             _activeLevel = level;
             OnCinematicLoaded?.Invoke(level);
 
@@ -101,21 +110,31 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public async void LoadLevel(Level level) {
+    public IEnumerator LoadLevelRoutine(Level level) {
         _contestantsCount = 0;
         _contestantsEliminated = 0;
         var levelData = _levelsData.FirstOrDefault(data => data.LevelID == level);
         if (levelData == null) {
             Debug.Log("No LevelDataSO found for level: " + level.ToString());
-            return;
+            yield break;
         }
         if (levelData.NpcsPrefabs.Length != levelData.NpcsStarPos.Length) {
             Debug.Log("NPC prefabs and pos length does not match.");
-            return;
+            yield break;
         }
 
-        // load scene async before instantiating objects
-        await SceneLoader.LoadSceneAsync(SceneLoader.SCENE_GAME_STRING);
+        // fade + load scene async before instantiating objects
+        var transitionUI = FindObjectOfType<TransitionUI>();
+        if (transitionUI != null) {
+            yield return transitionUI.FadeInRoutine();
+            Debug.Log("Transition routine finished.");
+        }
+
+        var asyncLoad = SceneLoader.LoadSceneAsync(SceneLoader.SCENE_GAME_STRING);
+        while (!asyncLoad.IsCompleted) {
+            yield return null;
+        }
+
         _activeLevel = level;
 
         // instantiate background
@@ -233,40 +252,37 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void GameOverUI_OnRetry() {
-        LoadLevel(_activeLevel);      
+        StartCoroutine(LoadLevelRoutine(_activeLevel));      
     }
 
     private void CompanionUI_OnContinue() {
         if (_activeLevel == Level.Pool) {
-            LoadCinematic(Level.Garden);
+            StartCoroutine(LoadCinematicRoutine(Level.Garden));
         }
         if (_activeLevel  == Level.Garden) {
-            LoadCinematic(Level.Terrace);
+            StartCoroutine(LoadCinematicRoutine(Level.Terrace));
         }
         if (_activeLevel == Level.Terrace) {
-            LoadCinematic(Level.Lobby);
+            StartCoroutine(LoadCinematicRoutine(Level.Lobby));
         }
         if (_activeLevel == Level.Lobby) {
-            LoadCinematic(Level.Epilogue);
+            StartCoroutine(LoadCinematicRoutine(Level.Epilogue));
         }
     }
 
     public void LoadActiveLevel() {
         switch (_activeLevel) {
             case Level.Pool:
-                LoadLevel(Level.Pool);
+                StartCoroutine(LoadLevelRoutine(Level.Pool));
                 break;
             case Level.Garden:
-                LoadLevel(Level.Garden);
+                StartCoroutine(LoadLevelRoutine(Level.Garden));
                 break;
             case Level.Terrace:
-                LoadLevel(Level.Terrace);
+                StartCoroutine(LoadLevelRoutine(Level.Terrace));
                 break;
             case Level.Lobby:
-                LoadLevel(Level.Lobby);
-                break;
-            case Level.Epilogue: // end game since no level
-                SceneLoader.LoadScene(SceneLoader.SCENE_END_MENU_STRING);
+                StartCoroutine(LoadLevelRoutine(Level.Lobby));
                 break;
             default:
                 break;

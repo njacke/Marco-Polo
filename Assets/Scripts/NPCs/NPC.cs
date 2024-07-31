@@ -82,6 +82,7 @@ public class NPC : MonoBehaviour
         Blindfold.OnBlindfoldOpened += Blindfold_OnBlinfoldOpened;
         TutorialPopUpsUI.OnTutorialCompleted += TutorialPopUpsUI_OnTutorialCompleted;
         TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        TutorialPopUpsUI.OnCatchTutorialDone += TutorialPopUpsUI_OnCatchTutorialDone;
     }
 
 
@@ -90,9 +91,10 @@ public class NPC : MonoBehaviour
         PlayerController.OnScan -= PlayerController_OnScan;
         Blindfold.OnBlindfoldOpened -= Blindfold_OnBlinfoldOpened;
         TutorialPopUpsUI.OnTutorialCompleted -= TutorialPopUpsUI_OnTutorialCompleted;
-        TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        TutorialPopUpsUI.OnDialogueBoxDisplayed -= TutorialPopUpsUI_OnDialogueBoxDisplayed;
+        TutorialPopUpsUI.OnCatchTutorialDone -= TutorialPopUpsUI_OnCatchTutorialDone;
     }
-    
+
 
     private void Update() {
         if (!_isTutorial && !_isCaught && !FleeCheck()) {
@@ -183,6 +185,10 @@ public class NPC : MonoBehaviour
             }
             _rndVoiceCDRemaining = UnityEngine.Random.Range(_rndVoiceCD - _rndVoiceCDrange, _rndVoiceCD + _rndVoiceCDrange);
         }
+    }
+    
+    private void TutorialPopUpsUI_OnCatchTutorialDone() {
+        _soundWave.ResetSoundWave();
     }
 
     private void TutorialPopUpsUI_OnDialogueBoxDisplayed() {

@@ -16,12 +16,18 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] private NPCVoicesCollection _spaVoicesCollection;
     [SerializeField] private NPCVoicesCollection _usaVoicesCollection;
     [SerializeField] private NPCVoicesCollection _dogVoicesCollection;
+    [SerializeField] private AudioMixer _audioMixer;
     [SerializeField] private AudioMixerGroup _sfxMixerGroup;
     [SerializeField] private AudioMixerGroup _musicMixerGroup;
     [SerializeField] private AudioMixerGroup _voiceMixerGroup;
     [SerializeField] private int _maxAudioSources = 15;
     [SerializeField] private float _mainMenuMusicDelay = 1f;
     [SerializeField] private SoundSO _mumTutorialSound;
+    
+    private float _startingAudioMixerVolume;
+    private const string MASTER_VOLUME_PARAM = "MasterVolume"; // exposed parameter for master volume
+    private const float MIN_MASTER_VOLUME_DB = -80.0f;
+
     private AudioSource _slideAudioSource;
     private AudioSource _currentMusic;
 
@@ -54,6 +60,7 @@ public class AudioManager : Singleton<AudioManager>
         EndGameUI.OnEndGameMenuLoaded += EndGameUI_OnEndGameMenuLoaded;
         TutorialPopUpsUI.OnDialogueBoxDisplayed += TutorialPopUpsUI_OnDialogueBoxDisplayed;
         GameManager.OnCinematicLoaded += GameManager_OnCinematicLoaded;
+        CinematicManager.OnEpilogueEnd += CinematicManager_OnEpilogueEnd;
     }
 
 
@@ -77,6 +84,25 @@ public class AudioManager : Singleton<AudioManager>
         EndGameUI.OnEndGameMenuLoaded -= EndGameUI_OnEndGameMenuLoaded;
         TutorialPopUpsUI.OnDialogueBoxDisplayed -= TutorialPopUpsUI_OnDialogueBoxDisplayed;
         GameManager.OnCinematicLoaded -= GameManager_OnCinematicLoaded;
+        CinematicManager.OnEpilogueEnd -= CinematicManager_OnEpilogueEnd;
+    }
+
+    private void CinematicManager_OnEpilogueEnd(float duration) {
+        StartCoroutine(FadeOutVolume(duration));
+    }
+
+    private IEnumerator FadeOutVolume(float duration) {
+        float elapsedTime = 0f;
+        _audioMixer.GetFloat(MASTER_VOLUME_PARAM, out float startVolumeDB);
+
+        while (elapsedTime < duration) {
+            elapsedTime += Time.unscaledDeltaTime;
+            float newVolumeDB = Mathf.Lerp(startVolumeDB, MIN_MASTER_VOLUME_DB, elapsedTime / duration);
+            _audioMixer.SetFloat(MASTER_VOLUME_PARAM, newVolumeDB);
+            yield return null;
+        }
+
+        _audioMixer.SetFloat(MASTER_VOLUME_PARAM, MIN_MASTER_VOLUME_DB);
     }
 
     private void GameManager_OnCinematicLoaded(GameManager.Level level) {
@@ -84,11 +110,16 @@ public class AudioManager : Singleton<AudioManager>
     }
 
     private void TutorialPopUpsUI_OnDialogueBoxDisplayed() {
-        ItaSpeech();
+        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.Italian].Speech);
     }
 
     private void EndGameUI_OnEndGameMenuLoaded() {
-        PlayRandomSound(_soundsCollectionSO.EndGameMusic, isMusic: true);
+        _audioMixer.SetFloat(MASTER_VOLUME_PARAM, _startingAudioMixerVolume);
+
+        // no end menu music
+        if (_currentMusic != null) {
+            _currentMusic.Stop();
+        }
     }
 
     private void TutorialManager_OnTutorialLoaded() {
@@ -171,6 +202,11 @@ public class AudioManager : Singleton<AudioManager>
     }
 
     private void Init() {
+        // init mixer
+        _audioMixer.GetFloat(MASTER_VOLUME_PARAM, out float currentVolume);
+        _startingAudioMixerVolume = Mathf.Pow(10, currentVolume / 20); // convert dB to linear
+
+        // init dicts
         _npcsVoicesDict = new Dictionary<NPC.NPCType, NPCVoicesCollection>() {
             { NPC.NPCType.Italian, _itaVoicesCollection },
             { NPC.NPCType.German, _gerVoicesCollection },
@@ -184,7 +220,8 @@ public class AudioManager : Singleton<AudioManager>
             { GameManager.Level.Pool, _soundsCollectionSO.PoolMusic },
             { GameManager.Level.Garden, _soundsCollectionSO.GardenMusic },
             { GameManager.Level.Terrace, _soundsCollectionSO.TerraceMusic },
-            { GameManager.Level.Lobby, _soundsCollectionSO.LobbyMusic }
+            { GameManager.Level.Lobby, _soundsCollectionSO.LobbyMusic },
+            { GameManager.Level.Epilogue, _soundsCollectionSO.LobbyMusic }
         };
 
         _obstacleSFXDict = new Dictionary<Obstacle.ObstacleType, SoundSO[]>() {
@@ -318,21 +355,5 @@ public class AudioManager : Singleton<AudioManager>
             var delay = UnityEngine.Random.Range(0f, _winVoiceMaxDelay);
             StartCoroutine(PlayRandomSoundWithDelay(_npcsVoicesDict[npcType].Congrats, false, delay));
         }
-    }
-
-    public void ItaSpeech() {
-        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.Italian].Speech); 
-    }
-
-    public void GerSpeech() {
-        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.German].Speech); 
-    }
-
-    public void SpaSpeech() {
-        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.Spaniard].Speech); 
-    }
-
-    public void UsaSpeech() {
-        PlayRandomSound(_npcsVoicesDict[NPC.NPCType.American].Speech); 
     }
 }

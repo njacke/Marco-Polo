@@ -4,7 +4,6 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
 
 public class GuessUI : MonoBehaviour
 {
@@ -23,6 +22,7 @@ public class GuessUI : MonoBehaviour
     [SerializeField] private Sprite[] _germanSprites;
     [SerializeField] private Sprite[] _spaniardSprites;
     [SerializeField] private Sprite[] _americanSprites;
+    [SerializeField] private Sprite _unknownSprite;
     
     private NPC.NPCType _currentNPCType;
     private CursorManager _cursorManager;
@@ -35,15 +35,16 @@ public class GuessUI : MonoBehaviour
 
     private void OnEnable() {
         GameManager.OnGuess += GameManager_OnGuess;
-
+        GameManager.OnGameOver += GameManager_OnGameOver;
         TutorialPopUpsUI.OnCatchTutorialDone += TutorialPopUpsUI_OnCatchTutorialDone;
     }
 
     private void OnDisable() {
         GameManager.OnGuess -= GameManager_OnGuess;
-
+        GameManager.OnGameOver -= GameManager_OnGameOver;
         TutorialPopUpsUI.OnCatchTutorialDone -= TutorialPopUpsUI_OnCatchTutorialDone;
     }
+
 
     private void Init() {    
         _cursorManager = GetComponentInChildren<CursorManager>();
@@ -67,6 +68,10 @@ public class GuessUI : MonoBehaviour
         StartCoroutine(LoadGuessUIRoutine(TutorialManager.Instance.GetTutorialNPC.GetNPCType));
     }
 
+    private void GameManager_OnGameOver(GameManager.GameOverType type) {
+        // disable guess UI if game over is triggered to avoid displaying both
+        this.gameObject.SetActive(false);
+    }
 
     private void GameManager_OnGuess(NPC.NPCType type) {
         if (TutorialManager.Instance != null) {
@@ -79,24 +84,23 @@ public class GuessUI : MonoBehaviour
     }
 
     private IEnumerator LoadGuessUIRoutine(NPC.NPCType type) {
-
         if (TutorialManager.Instance != null) {
-            _answersButtonsArray[1].interactable = false;
-            _answersButtonsArray[2].interactable = false;
-            _answersButtonsArray[3].interactable = false;
+            SetUnknownButtonState(_answersButtonsArray[1]);
+            SetUnknownButtonState(_answersButtonsArray[2]);
+            SetUnknownButtonState(_answersButtonsArray[3]);
         }
 
         else if (GameManager.Instance != null) {
             switch (GameManager.Instance.GetActiveLevel) {
                 case GameManager.Level.Pool:
-                _answersButtonsArray[2].interactable = false;
-                _answersButtonsArray[3].interactable = false;
-                break;
+                    SetUnknownButtonState(_answersButtonsArray[2]);
+                    SetUnknownButtonState(_answersButtonsArray[3]);
+                    break;
                 case GameManager.Level.Garden:
-                _answersButtonsArray[3].interactable = false;
-                break;
+                    SetUnknownButtonState(_answersButtonsArray[3]);
+                    break;
                 default:
-                break;
+                    break;
             }
         }
 
@@ -112,6 +116,13 @@ public class GuessUI : MonoBehaviour
 
         _cursorManager.gameObject.SetActive(true);
         _cursorManager.DisplayAndEnableCursor();
+    }
+
+    private void SetUnknownButtonState(Button button) {
+        button.interactable = false;
+        SpriteState spriteState = button.spriteState;
+        spriteState.disabledSprite = _unknownSprite;
+        button.spriteState = spriteState;
     }
 
     private IEnumerator ResetGuessUIRoutine(bool isCorrectAnswer) {
@@ -160,13 +171,13 @@ public class GuessUI : MonoBehaviour
         }
 
         if (TutorialManager.Instance != null) {
-            Debug.Log("Setting NPC type for tutorial");
+            //Debug.Log("Setting NPC type for tutorial");
             _currentNPCType = TutorialManager.Instance.GetTutorialNPC.GetNPCType;
         }
 
         if (_npcTypeIndexDict.TryGetValue(_currentNPCType, out int correctIndex)) {
             if (index == correctIndex) {
-                Debug.Log("Answer was correct");
+                //Debug.Log("Answer was correct");
                 yield return RevealImageRoutine();
                 yield return ResetGuessUIRoutine(true);
                 OnGuessEnd?.Invoke(true);

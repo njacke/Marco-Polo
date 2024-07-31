@@ -342,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec8b207e812a40945aad33f7ef7587c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resetDelay: 1
+  _resetDelay: 0.5
   _titleImage: {fileID: 6559804507331098890}
   _companionImage: {fileID: 8516418380944181504}
   _npcName: {fileID: 393145553995708951}

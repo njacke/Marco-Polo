@@ -24,5 +24,4 @@ MonoBehaviour:
   WrongGuess: []
   Congrats:
   - {fileID: 11400000, guid: 5cd467783ad97074eae45a9aaa6e7191, type: 2}
-  Speech:
-  - {fileID: 11400000, guid: 5cd467783ad97074eae45a9aaa6e7191, type: 2}
+  Speech: []

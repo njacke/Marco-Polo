@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ita_polo_1
   m_EditorClassIdentifier: 
   AudioType: 2
-  Clip: {fileID: 8300000, guid: 77ad1528d99d6a14982a4b8a8a1aa869, type: 3}
+  Clip: {fileID: 8300000, guid: 8c891afd20e025b42ace9792e7a405a1, type: 3}
   Loop: 0
   RandomizePitch: 1
   RandomPitchRangeModifier: 0.1
